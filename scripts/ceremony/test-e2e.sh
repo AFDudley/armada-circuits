@@ -35,7 +35,38 @@ mkdir -p "$CEREMONY_DIR"
 step() { echo ""; echo "[test] ══ $* ══"; }
 
 step "init"
+"$SCRIPT_DIR/init.sh"
+
+# Mirror the real flow: the base zkey is "published" (URL recorded) BEFORE
+# the beacon height is announced — init.sh refuses to announce otherwise.
+echo "[test] recording 0000.zkey URL (file://)"
+tmp="$(mktemp)"
+jq --arg d "$CEREMONY_DIR" \
+  '.shapes["1x1"].contributions[0].zkeyUrl = "file://" + $d + "/1x1/0000.zkey"' \
+  "$CEREMONY_DIR/manifest.json" > "$tmp"
+mv "$tmp" "$CEREMONY_DIR/manifest.json"
+
+step "init --announce-height (guard should pass with URLs published)"
 "$SCRIPT_DIR/init.sh" --announce-height 99999999
+
+step "negative test: announce guard refuses unpublished shapes"
+SHAPES_BEFORE="$(jq -c '.beacon.announcedHeight' "$CEREMONY_DIR/manifest.json")"
+tmp="$(mktemp)"
+jq '.shapes["1x1"].contributions[0].zkeyUrl = null' "$CEREMONY_DIR/manifest.json" > "$tmp"
+mv "$tmp" "$CEREMONY_DIR/manifest.json"
+if "$SCRIPT_DIR/init.sh" --announce-height 99999998 >/dev/null 2>&1; then
+  echo "[test] FAIL: announce guard accepted a shape with zkeyUrl=null"
+  exit 1
+fi
+echo "[test] announce guard correctly refused unpublished shape"
+# restore the URL
+tmp="$(mktemp)"
+jq --arg d "$CEREMONY_DIR" \
+  '.shapes["1x1"].contributions[0].zkeyUrl = "file://" + $d + "/1x1/0000.zkey"' \
+  "$CEREMONY_DIR/manifest.json" > "$tmp"
+mv "$tmp" "$CEREMONY_DIR/manifest.json"
+[ "$(jq -c '.beacon.announcedHeight' "$CEREMONY_DIR/manifest.json")" = "$SHAPES_BEFORE" ] \
+  || { echo "[test] FAIL: refused announce still mutated the beacon height"; exit 1; }
 
 step "contribution 1 (alice)"
 CEREMONY_ENTROPY="alice-test-entropy-not-secret" "$SCRIPT_DIR/contribute.sh" 1x1 alice
@@ -43,14 +74,14 @@ CEREMONY_ENTROPY="alice-test-entropy-not-secret" "$SCRIPT_DIR/contribute.sh" 1x1
 step "contribution 2 (bob)"
 CEREMONY_ENTROPY="bob-test-entropy-not-secret" "$SCRIPT_DIR/contribute.sh" 1x1 bob
 
-# Point manifest URLs at local files (exercises the download+hash path).
-echo "[test] filling zkeyUrl values with file:// URLs"
+# Point contribution URLs at local files (0000's URL was recorded pre-announce).
+echo "[test] filling contribution zkeyUrl values with file:// URLs"
 tmp="$(mktemp)"
 jq --arg d "$CEREMONY_DIR" '
   .shapes["1x1"].contributions |= map(
-    if .index == 0 then .zkeyUrl = "\($d)/1x1/0000.zkey"
-    else .zkeyUrl = "\($d)/1x1/\(.index | tostring | ("000" + .) | .[-4:]).zkey"
-    end | .zkeyUrl = "file://" + .zkeyUrl
+    if .index == 0 then .
+    else .zkeyUrl = "file://" + $d + "/1x1/" + "\(.index | tostring | ("000" + .) | .[-4:])" + ".zkey"
+    end
   )' "$CEREMONY_DIR/manifest.json" > "$tmp"
 mv "$tmp" "$CEREMONY_DIR/manifest.json"
 

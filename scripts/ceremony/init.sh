@@ -65,15 +65,6 @@ if [ ! -f "$MANIFEST" ]; then
     }' > "$MANIFEST"
 fi
 
-# Optionally set/update the announced beacon height.
-if [ -n "$ANNOUNCE_HEIGHT" ]; then
-  [[ "$ANNOUNCE_HEIGHT" =~ ^[0-9]+$ ]] || die "invalid height: $ANNOUNCE_HEIGHT"
-  log "announcing beacon height: $ANNOUNCE_HEIGHT"
-  tmp="$(mktemp)"
-  jq --argjson h "$ANNOUNCE_HEIGHT" '.beacon.announcedHeight = $h' "$MANIFEST" > "$tmp"
-  mv "$tmp" "$MANIFEST"
-fi
-
 # ── Phase 2 setup per shape ──────────────────────────────────
 for shape in "${SHAPES[@]}"; do
   R1CS="$(r1cs_for "$shape")"
@@ -132,6 +123,20 @@ done
 
 log ""
 log "Init complete. Manifest: $MANIFEST"
+
+# Optionally set/update the announced beacon height. Announcing is the point
+# of no return for contributor onboarding: every shape's 0000.zkey must be
+# publicly reachable first (contributors download by URL), so this runs after
+# the shape loop and refuses to announce with unpublished zkeys.
+if [ -n "$ANNOUNCE_HEIGHT" ]; then
+  [[ "$ANNOUNCE_HEIGHT" =~ ^[0-9]+$ ]] || die "invalid height: $ANNOUNCE_HEIGHT"
+  MISSING="$(jq -r '[.shapes | to_entries[] | select(.value.contributions[0].zkeyUrl == null or .value.contributions[0].zkeyUrl == "TODO") | .key] | join(" ")' "$MANIFEST")"
+  [ -z "$MISSING" ] || die "cannot announce: shapes missing 0000.zkey URLs: $MISSING"
+  log "announcing beacon height: $ANNOUNCE_HEIGHT"
+  tmp="$(mktemp)"
+  jq --argjson h "$ANNOUNCE_HEIGHT" '.beacon.announcedHeight = $h' "$MANIFEST" > "$tmp"
+  mv "$tmp" "$MANIFEST"
+fi
 if [ "$(mget '.beacon.announcedHeight')" = "null" ]; then
   log "NOTE: beacon height not announced yet — re-run with --announce-height <H> before the public announcement."
 fi

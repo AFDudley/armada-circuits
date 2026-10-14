@@ -27,7 +27,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "cf6f8a32922f505bc65b3ae721c298ddbf8c77a8f43912a6c26609894e16e344",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/1x1-0000.zkey"
         }
       ],
       "final": null
@@ -42,7 +42,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "75dac909a7c0ae0cdd2db408ead10b6b0b038cfe3dc218d745745c25f2186a81",
-          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony-test/1x2-0000.zkey"
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/1x2-0000.zkey"
         }
       ],
       "final": null
@@ -57,7 +57,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "814752fa667245202ec12cac0e6ee4e96a04bfcbb17624f5537a33aa99adab7c",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/2x2-0000.zkey"
         }
       ],
       "final": null
@@ -72,7 +72,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "1cedc4f011aa781354871e080d29a3bd05580ffd968d98c40d66c6769e1dfbe2",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/2x3-0000.zkey"
         }
       ],
       "final": null
@@ -87,7 +87,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "ecc8d537439deb6bbc4a8118185ae3adc59cda6776ca004b147752b8267c3e1d",
-          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony-test/8x4-0000.zkey"
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/8x4-0000.zkey"
         }
       ],
       "final": null
@@ -102,7 +102,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "89fdaa42c119578464e06075e4d83198a77979e105e9f4e083b52ccb30927154",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/2x1-0000.zkey"
         }
       ],
       "final": null
@@ -117,7 +117,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "c9ca6096cc3dc5569fa609ccf90039146648460714894e432d834bdeb16bd345",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/3x1-0000.zkey"
         }
       ],
       "final": null
@@ -132,7 +132,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "a37a19b098bb511dbeb1a11550b0350cb38fd594236561fe28a037708576d29f",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/4x1-0000.zkey"
         }
       ],
       "final": null
@@ -147,7 +147,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "b4e0f17e67791d8132802755d8ad5b08f19816ff60bf62971150f7ef5ecb0893",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/5x1-0000.zkey"
         }
       ],
       "final": null
@@ -162,7 +162,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "4b49d2374bf71ea725c8ec7dd45ded620aa652166bc3286e70b94b4a5ee92ec5",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/6x1-0000.zkey"
         }
       ],
       "final": null
@@ -177,7 +177,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "2af1bd147376bb2b24dc47673a3f81d8777354aca3c40c1dc2e97337f832613e",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/7x1-0000.zkey"
         }
       ],
       "final": null
@@ -192,7 +192,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "17b8a36e275453802ed1d960f04d69f06bd98162382536c21af3668222c3e53e",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/8x1-0000.zkey"
         }
       ],
       "final": null
@@ -207,7 +207,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "1c848a546a7bd67f084d5c72f19600c3531d59abf5904ec8d39e5fad5c405b48",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/3x2-0000.zkey"
         }
       ],
       "final": null
@@ -222,7 +222,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "9606234861e5d6397a6ff9b5723c0fcee7f5414ef24f8be90e3069e40eb5cc53",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/4x2-0000.zkey"
         }
       ],
       "final": null
@@ -237,7 +237,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "5ffb39c98729a398fc5dc5b661c355538356dda3bdee5c79a6d4bc3ed6ae54dc",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/5x2-0000.zkey"
         }
       ],
       "final": null
@@ -252,7 +252,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "9a8c76ada64e158e2f997025d32452dd4766785a9cb42cbee61b40ed5a6e7e89",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/6x2-0000.zkey"
         }
       ],
       "final": null
@@ -267,7 +267,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "9bf915ead6bb30e38349e4c574efe2ffe8fcab7923e5020e5a673c0d78c280e8",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/1x3-0000.zkey"
         }
       ],
       "final": null
@@ -282,7 +282,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "c1013210188aa62c7eb7a90df4e8fba0eefd91c40a2d0283ca2b684a678ac84d",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/3x3-0000.zkey"
         }
       ],
       "final": null
@@ -297,7 +297,7 @@
           "type": "setup",
           "name": "coordinator",
           "zkeySha256": "c8ab4563cc76e0188287ae80391bd86a542367d1002c76285b337e39e40d1ab5",
-          "zkeyUrl": null
+          "zkeyUrl": "https://github.com/ship-armada/armada-circuits/releases/download/v1.0.0-ceremony/4x3-0000.zkey"
         }
       ],
       "final": null
