@@ -12,7 +12,7 @@
     "type": "ethereum-block-hash",
     "chain": "ethereum-mainnet",
     "rule": "After the final public contribution is merged, each shape is finalized with a random beacon: the keccak block hash of the first Ethereum mainnet block at or after the announced height. Anyone can recompute the final zkey from the last contribution and the published block hash.",
-    "announcedHeight": 25696242,
+    "announcedHeight": null,
     "blockHeight": null,
     "blockHash": null
   },
