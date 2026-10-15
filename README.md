@@ -51,13 +51,23 @@ Circuit sources are written and compiling. Reference vectors captured. Dev trust
 
 See `docs/SPEC.md` for the full matrix and public-input layout.
 
+## Nullifier Disclosure Circuit
+
+`src/operations/NullifierDisclosure.circom` (entry point `src/main/main_disclosure.circom`) supports voluntary selective disclosure (armada-laconic ADR-0020, `engineering/16-selective-disclosure.md`). A user proves that one published nullifier belongs to a note of their wallet, without revealing the `nullifyingKey`.
+
+- **Public inputs:** `statementHash`, `masterPublicKey`, `nullifier`, `treeNumber`, `leafIndex`.
+- **Private inputs:** `spendingPublicKey[2]`, `nullifyingKey`, `signature[3]`.
+- **Constraints:** `masterPublicKey == Poseidon(Ax, Ay, nullifyingKey)`; `nullifier == Poseidon(nullifyingKey, leafIndex)`; `leafIndex` and `treeNumber` fit in 16 bits; both curve points are on BabyJubJub; the spending key signs `Poseidon(statementHash, masterPublicKey, nullifier, treeNumber, leafIndex)` (circomlib `EdDSAPoseidonVerifier`).
+- **Size:** 8,248 non-linear and 1,835 linear constraints (`--O1`).
+- **Tests:** `tests/disclosure.test.js`. It checks parity with armada-sdk's recorded engine vectors, reproduces the nullifier and note public key of every captured spend, and runs rejection cases and a Groth16 round trip. It reads the vectors from `../armada-sdk/test/vectors`, or from `ARMADA_SDK_VECTORS`.
+
 ## Build
 
 ```bash
 npm install
-npm run compile       # compile all circuit shapes
+CIRCOM_BIN=circom2 npm run compile   # compile all circuits (circom2 = the npm circom build)
 npm run setup:dev     # generate dev ptau + zkey (unsafe — testing only)
-npm run test          # run differential tests
+npm run test          # static analysis + disclosure tests
 ```
 
 ## Security
