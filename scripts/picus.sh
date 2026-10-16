@@ -11,7 +11,7 @@ set -euo pipefail
 #   poseidon2/3/5  the three Poseidon instances           weak safety  → expect safe
 #   wiring         the circuit with hashes and verifier   strong safety → expect safe
 #                  replaced by free inputs
-#   control_unsafe an output that no constraint uses      weak safety  → expect unsafe
+#   control_minimal an output that no constraint uses      weak safety  → expect unsafe
 #
 # The control proves that this Picus setup reports a real under-constrained signal.
 # EdDSAPoseidonVerifier stays a trusted circomlib component, as it is for Transact.circom.
@@ -49,7 +49,7 @@ check() {
 
 echo "Running Picus (cvc5)..."
 status=0
-check control_unsafe 9 || status=1
+check control_minimal 9 || status=1
 check poseidon2 8 || status=1
 check poseidon3 8 || status=1
 check poseidon5 8 || status=1
