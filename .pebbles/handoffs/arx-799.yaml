@@ -1,0 +1,82 @@
+status: completed
+pebble_id: arx-799
+summary: >
+  Added the Ledger circuit (src/operations/Ledger.circom) and its entry
+  point (src/main/main_ledger.circom). The circuit proves a hidden-balance
+  move between two channel participants: prevCommitment and
+  nextCommitment are the only public signals, each a Poseidon commitment
+  over (balance0, balance1, salt), and the only move rule enforced is
+  conservation (balance0Prev + balance1Prev === balance0Next +
+  balance1Next). All four balances carry a Num2Bits(120) range check,
+  matching Transact.circom, and the circuit includes circomlib's
+  poseidon.circom and bitify.circom via the same relative paths
+  Transact.circom uses. Ledger is not an Armada pool shape, so it is not
+  in scripts/compile.sh's SHAPES array; it has its own
+  scripts/compile-ledger.sh, and scripts/setup-dev.sh gained a ledger
+  block (after the existing per-shape loop, which is unchanged) that runs
+  the same unsafe dev Powers-of-Tau and per-circuit ceremony the existing
+  shapes use, clearly marked as unsafe in both files. Added
+  tests/ledger-test.js (vectors|compile|lint modes) and its shared helper
+  tests/lib/ledger-circuit.js, which compiles the circuit with the repo's
+  own circom2 and runs the same dev ceremony on demand, so the test is
+  self-contained. Verified by running all three modes: vectors proves and
+  verifies a valid move (100,50 -> 70,80), and shows a conservation
+  violation (70,90) and a commitment mismatch (a nextCommitment not
+  matching the salt actually used) both throw during witness generation
+  (valid_move_verifies=true, conservation_violation_rejected=true,
+  commitment_mismatch_rejected=true); compile reports
+  r1cs_constraints=1695 and main_ledger_r1cs_exists=true; lint reports
+  lint_problems=0 via circomspect. Confirmed by grep that
+  scripts/compile.sh does not mention ledger, and that
+  src/main/main_ledger.circom declares exactly prevCommitment and
+  nextCommitment as public.
+cost: ~95k tokens
+commits:
+  - "d6fae530eba3de8905b9f60435138193d5fe4827"
+verify_transcript:
+  hooks:
+    - name: claude-md-coverage
+      outcome: passed
+      duration_s: 1
+    - name: reroute-main-commit
+      outcome: passed
+      duration_s: 1
+    - name: trailing-whitespace
+      outcome: passed
+      duration_s: 1
+    - name: end-of-file-fixer
+      outcome: passed
+      duration_s: 1
+    - name: check-added-large-files
+      outcome: passed
+      duration_s: 1
+    - name: check-merge-conflict
+      outcome: passed
+      duration_s: 1
+    - name: check-case-conflict
+      outcome: passed
+      duration_s: 1
+    - name: mixed-line-ending
+      outcome: passed
+      duration_s: 1
+    - name: eslint
+      outcome: passed
+      duration_s: 3
+    - name: prettier
+      outcome: passed
+      duration_s: 2
+    - name: tdd-trailer
+      outcome: passed
+      duration_s: 1
+    - name: check-subtree-edits
+      outcome: passed
+      duration_s: 1
+    - name: session-trailer
+      outcome: passed
+      duration_s: 1
+e2e_gate:
+  spec: tests/ledger-test.js
+  command: "node tests/ledger-test.js vectors"
+  result: passed
+  ran_at_sha: "d6fae530eba3de8905b9f60435138193d5fe4827"
+  mocks_in_path: false
