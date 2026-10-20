@@ -1,0 +1,91 @@
+status: completed
+pebble_id: arx-ab0
+summary: >
+  Added src/lib/game-template.circom: a reusable GameTemplate circuit
+  template enforcing the two balance commitments, conservation, and
+  120-bit range checks for a two-party ZK game move, per the N6 design
+  brief (docs/tasks/N6-game-template-circuit.md). Added
+  src/operations/Battleship.circom: a 3x3-board (N=9, SHIPS=3)
+  Battleship move circuit built on GameTemplate, with public signals
+  prevCommitment, nextCommitment, boardCommitment, target, result,
+  stake. It packs the hidden board into one field element, commits it
+  with Poseidon, enforces a one-hot selector over the shot target, and
+  forces the public result to equal the committed board's cell at
+  target via an accumulated selector*cell sum, so a lying defender who
+  claims a miss on a ship cell fails witness generation. A hit moves
+  stake from the defender to the attacker; a miss moves nothing. Added
+  scripts/compile-game.sh, which compiles the circuit and builds its
+  development key from a dedicated power-14 Powers-of-Tau (never
+  power-17, which this script never mentions). Added
+  tests/battleship-test.js, a self-contained probe with no relative
+  require: it compiles the circuit, builds its own power-14 dev
+  ptau/zkey, proves and verifies a hit and a miss with real groth16
+  proofs against the real compiled circuit, proves witness generation
+  rejects the lying-defender case, counts real r1cs constraints, and
+  runs circomspect on the two circuit files. I ran the probe fresh
+  (moved any prior build/ output aside first) and it printed
+  {"hit_verifies":true,"miss_verifies":true,"lying_defender_rejected":true,"r1cs_constraints":2253,"battleship_r1cs_exists":true,"lint_problems":0}
+  with exit code 0. I hit one circomspect false positive along the way
+  (it does not recognize a bare `var === <constant>` constraint as
+  using the var) and fixed it by routing the one-hot sum through an
+  intermediate signal, which is now part of the committed circuit, not
+  a workaround in the test. I ran scripts/compile-game.sh directly
+  (overriding CIRCOM_BIN/PATH to the repo's local circom2/snarkjs,
+  since this sandbox has no global circom/snarkjs binary — the same
+  pre-existing condition scripts/compile-ledger.sh already has) and
+  confirmed it produces build/battleship/{Battleship.r1cs,final.zkey,vkey.json}.
+  I verified all four grep-based acceptance clauses (the six public
+  signals named in Battleship.circom, power 14 present and power 17
+  absent in compile-game.sh, no relative require in the probe) by hand
+  with the exact patterns the spec uses. Ran pre-commit --all-files:
+  all hooks passed.
+cost: ~95k tokens
+commits:
+  - "84a3fe7badeac9939338afaa1626d5c98c42f456"
+verify_transcript:
+  hooks:
+    - name: claude-md-coverage
+      outcome: passed
+      duration_s: 0.1
+    - name: reroute-main-commit
+      outcome: passed
+      duration_s: 0.1
+    - name: trailing-whitespace
+      outcome: passed
+      duration_s: 0.1
+    - name: end-of-file-fixer
+      outcome: passed
+      duration_s: 0.1
+    - name: check-added-large-files
+      outcome: passed
+      duration_s: 0.1
+    - name: check-merge-conflict
+      outcome: passed
+      duration_s: 0.1
+    - name: check-case-conflict
+      outcome: passed
+      duration_s: 0.1
+    - name: mixed-line-ending
+      outcome: passed
+      duration_s: 0.1
+    - name: eslint
+      outcome: passed
+      duration_s: 0.3
+    - name: prettier
+      outcome: passed
+      duration_s: 0.3
+    - name: tdd-trailer
+      outcome: passed
+      duration_s: 0.1
+    - name: check-subtree-edits
+      outcome: passed
+      duration_s: 0.1
+    - name: session-trailer
+      outcome: passed
+      duration_s: 0.1
+e2e_gate:
+  spec: contracts/specs/derived-arx-ab0.spec.json
+  command: "node tests/battleship-test.js"
+  result: passed
+  ran_at_sha: "84a3fe7badeac9939338afaa1626d5c98c42f456"
+  mocks_in_path: false
