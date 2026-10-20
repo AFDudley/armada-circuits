@@ -1,0 +1,359 @@
+{
+  "id": "derived-arx-ab0",
+  "original_statement": "What must hold? State the invariant or expectation this concerns. armada-circuits provides a reusable GameTemplate circuit and a Battleship example circuit. The Battleship circuit proves a conserved hidden-balance game move. It binds a hidden board with a Poseidon commitment. It answers one shot with a one-hot selector. A hit moves the stake to the attacker. A miss moves nothing. GameTemplate enforces the two balance commitments, conservation, and the 120-bit range checks.\nWhat holds now? Describe the current, observed state. No GameTemplate circuit exists. No Battleship circuit exists. The files src/lib/game-template.circom, src/operations/Battleship.circom, scripts/compile-game.sh, and tests/battleship-test.js are absent.\nHow do you see it? Describe exactly how to observe this for yourself \u2014 the steps to reproduce, or how you would demo it. The probe tests/battleship-test.js prints one JSON object to stdout. The field hit_verifies is true for a valid hit. The field miss_verifies is true for a valid miss. The field lying_defender_rejected is true when a defender claims a miss on a committed ship cell. The field r1cs_constraints is a positive integer. The field battleship_r1cs_exists is true. The field lint_problems is zero. The file src/operations/Battleship.circom declares the public signals prevCommitment, nextCommitment, boardCommitment, target, result, and stake.\nWhat constraints apply? State them in plain prose. The dev key uses a small Powers-of-Tau at power 14, not power 17. The probe is self-contained and inlines every helper, so a single-file replay reproduces it.",
+  "restatement": "armada-circuits must gain a reusable GameTemplate circuit and a Battleship example circuit built on it. The Battleship circuit proves one conserved hidden-balance game move. It binds a hidden board with a Poseidon commitment and answers one shot with a one-hot selector. A hit moves the stake to the attacker. A miss moves nothing. GameTemplate enforces the two balance commitments, conservation, and the 120-bit range checks. The self-contained probe tests/battleship-test.js prints one JSON object that shows this: hit_verifies true, miss_verifies true, lying_defender_rejected true, r1cs_constraints a positive integer, battleship_r1cs_exists true, lint_problems zero. The development key uses a small Powers-of-Tau at power 14, not power 17.",
+  "restatement_clauses": [
+    {
+      "id": "c1",
+      "text": "The four files src/lib/game-template.circom, src/operations/Battleship.circom, scripts/compile-game.sh, and tests/battleship-test.js exist."
+    },
+    {
+      "id": "c2",
+      "text": "The probe tests/battleship-test.js prints one JSON object to stdout, and the field hit_verifies is true for a valid hit."
+    },
+    {
+      "id": "c3",
+      "text": "The field miss_verifies is true for a valid miss."
+    },
+    {
+      "id": "c4",
+      "text": "The field lying_defender_rejected is true when a defender claims a miss on a committed ship cell."
+    },
+    {
+      "id": "c5",
+      "text": "The field r1cs_constraints is a positive integer."
+    },
+    {
+      "id": "c6",
+      "text": "The field battleship_r1cs_exists is true."
+    },
+    {
+      "id": "c7",
+      "text": "The field lint_problems is zero."
+    },
+    {
+      "id": "c8",
+      "text": "The file src/operations/Battleship.circom declares the public signals prevCommitment, nextCommitment, boardCommitment, target, result, and stake."
+    },
+    {
+      "id": "c9",
+      "text": "The dev key uses a small Powers-of-Tau at power 14, not power 17."
+    },
+    {
+      "id": "c10",
+      "text": "The probe is self-contained and inlines every helper, so a single-file replay reproduces it."
+    }
+  ],
+  "goal": "Add GameTemplate and Battleship circuits, a compile script, and a self-contained probe that proves hit, miss, and lying-defender behavior.",
+  "acceptance_criteria": [
+    "The GameTemplate circuit file is present in the library folder.",
+    "The Battleship circuit file is present in the operations folder.",
+    "The compile script for the game circuits is present.",
+    "The Battleship probe is present in the tests folder.",
+    "Running the probe exits cleanly and reports that a valid hit move passes proof verification.",
+    "Running the probe reports that a valid miss move passes proof verification.",
+    "Running the probe reports that a defender who claims a miss on a ship cell is rejected.",
+    "Running the probe reports a constraint count above zero for the compiled circuit.",
+    "Running the probe reports that the compiled Battleship constraint file exists.",
+    "Running the probe reports zero lint problems for the circuits.",
+    "The Battleship circuit file names all six public signals.",
+    "The compile script refers to a Powers-of-Tau of power 14.",
+    "The compile script does not use a Powers-of-Tau of power 17.",
+    "The probe does not load any helper file from a relative path."
+  ],
+  "request_clauses": [
+    {
+      "id": "c1",
+      "text": "The GameTemplate circuit file is present in the library folder."
+    },
+    {
+      "id": "c2",
+      "text": "The Battleship circuit file is present in the operations folder."
+    },
+    {
+      "id": "c3",
+      "text": "The compile script for the game circuits is present."
+    },
+    {
+      "id": "c4",
+      "text": "The Battleship probe is present in the tests folder."
+    },
+    {
+      "id": "c5",
+      "text": "Running the probe exits cleanly and reports that a valid hit move passes proof verification."
+    },
+    {
+      "id": "c6",
+      "text": "Running the probe reports that a valid miss move passes proof verification."
+    },
+    {
+      "id": "c7",
+      "text": "Running the probe reports that a defender who claims a miss on a ship cell is rejected."
+    },
+    {
+      "id": "c8",
+      "text": "Running the probe reports a constraint count above zero for the compiled circuit."
+    },
+    {
+      "id": "c9",
+      "text": "Running the probe reports that the compiled Battleship constraint file exists."
+    },
+    {
+      "id": "c10",
+      "text": "Running the probe reports zero lint problems for the circuits."
+    },
+    {
+      "id": "c11",
+      "text": "The Battleship circuit file names all six public signals."
+    },
+    {
+      "id": "c12",
+      "text": "The compile script refers to a Powers-of-Tau of power 14."
+    },
+    {
+      "id": "c13",
+      "text": "The compile script does not use a Powers-of-Tau of power 17."
+    },
+    {
+      "id": "c14",
+      "text": "The probe does not load any helper file from a relative path."
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "type": "file_exists",
+      "description": "The GameTemplate circuit file is present in the library folder.",
+      "proves": "The reusable GameTemplate circuit file exists.",
+      "restatement_clause_id": "c1",
+      "path": "src/lib/game-template.circom",
+      "clause_id": "c1"
+    },
+    {
+      "type": "file_exists",
+      "description": "The Battleship circuit file is present in the operations folder.",
+      "proves": "The Battleship circuit file exists.",
+      "restatement_clause_id": "c1",
+      "path": "src/operations/Battleship.circom",
+      "clause_id": "c2"
+    },
+    {
+      "type": "file_exists",
+      "description": "The compile script for the game circuits is present.",
+      "proves": "The compile script exists.",
+      "restatement_clause_id": "c1",
+      "path": "scripts/compile-game.sh",
+      "clause_id": "c3"
+    },
+    {
+      "type": "file_exists",
+      "description": "The Battleship probe is present in the tests folder.",
+      "proves": "The probe file exists.",
+      "restatement_clause_id": "c1",
+      "path": "tests/battleship-test.js",
+      "clause_id": "c4"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the probe exits cleanly and reports that a valid hit move passes proof verification.",
+      "proves": "A valid hit verifies, so the hit moves the stake and the proof is accepted.",
+      "restatement_clause_id": "c2",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/battleship-test.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "hit_verifies",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c5"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the probe reports that a valid miss move passes proof verification.",
+      "proves": "A valid miss verifies, so a miss that moves nothing is accepted.",
+      "restatement_clause_id": "c3",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/battleship-test.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "miss_verifies",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c6"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the probe reports that a defender who claims a miss on a ship cell is rejected.",
+      "proves": "The circuit refuses a false miss claim against the committed board.",
+      "restatement_clause_id": "c4",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/battleship-test.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "lying_defender_rejected",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c7"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the probe reports a constraint count above zero for the compiled circuit.",
+      "proves": "The Battleship circuit compiled to a real, non-empty constraint system.",
+      "restatement_clause_id": "c5",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/battleship-test.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "r1cs_constraints",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c8"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the probe reports that the compiled Battleship constraint file exists.",
+      "proves": "The compile step produced the Battleship constraint file.",
+      "restatement_clause_id": "c6",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/battleship-test.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "battleship_r1cs_exists",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c9"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the probe reports zero lint problems for the circuits.",
+      "proves": "The circuits pass the circuit lint check with no problems.",
+      "restatement_clause_id": "c7",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/battleship-test.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "lint_problems",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c10"
+    },
+    {
+      "type": "grep",
+      "description": "The Battleship circuit file names all six public signals.",
+      "proves": "The circuit declares prevCommitment, nextCommitment, boardCommitment, target, result, and stake.",
+      "restatement_clause_id": "c8",
+      "pattern": "prevCommitment",
+      "additional_patterns": [
+        "nextCommitment",
+        "boardCommitment",
+        "\\btarget\\b",
+        "\\bresult\\b",
+        "\\bstake\\b"
+      ],
+      "files": [
+        "src/operations/Battleship.circom"
+      ],
+      "count": {
+        "unit": "patterns",
+        "op": "eq",
+        "value": 6
+      },
+      "clause_id": "c11"
+    },
+    {
+      "type": "grep",
+      "description": "The compile script refers to a Powers-of-Tau of power 14.",
+      "proves": "The dev key uses power 14.",
+      "restatement_clause_id": "c9",
+      "pattern": "\\b14\\b",
+      "files": [
+        "scripts/compile-game.sh"
+      ],
+      "clause_id": "c12"
+    },
+    {
+      "type": "grep_absent",
+      "description": "The compile script does not use a Powers-of-Tau of power 17.",
+      "proves": "The dev key does not use power 17.",
+      "restatement_clause_id": "c9",
+      "pattern": "\\b17\\b",
+      "files": [
+        "scripts/compile-game.sh"
+      ],
+      "clause_id": "c13"
+    },
+    {
+      "type": "grep_absent",
+      "description": "The probe does not load any helper file from a relative path.",
+      "proves": "The probe inlines every helper, so one file replays it.",
+      "restatement_clause_id": "c10",
+      "pattern": "require\\(\\s*['\\\"]\\.{1,2}/",
+      "files": [
+        "tests/battleship-test.js"
+      ],
+      "clause_id": "c14"
+    }
+  ],
+  "declared_new_entrypoints": [
+    "tests/battleship-test.js"
+  ]
+}
