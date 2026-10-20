@@ -81,7 +81,10 @@ def read_ptau_power(path):
 
 
 def run(cmd, env=None, cwd=ROOT):
-    subprocess.run(cmd, cwd=cwd, env=env, check=True)
+    # Send the child's stdout to our stderr so this mode's only stdout is its final
+    # emit() JSON. snarkjs and the ceremony scripts log verbosely to stdout, and the
+    # acceptance grade parses the mode's ENTIRE stdout as one JSON object.
+    subprocess.run(cmd, cwd=cwd, env=env, check=True, stdout=sys.stderr)
 
 
 def capture(cmd, env=None, cwd=ROOT):
