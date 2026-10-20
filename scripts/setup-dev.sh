@@ -70,5 +70,23 @@ for shape_csv in "${SHAPES[@]}"; do
   echo "  → $ZKEY_DIR/vkey.json"
 done
 
+# Ledger circuit (not a pool shape — compiled separately by
+# scripts/compile-ledger.sh, so it is not in the SHAPES array above).
+LEDGER_DIR="$BUILD_DIR/ledger"
+LEDGER_R1CS="$LEDGER_DIR/main_ledger.r1cs"
+
+if [ ! -f "$LEDGER_R1CS" ]; then
+  echo "  SKIP ledger (no .r1cs — run scripts/compile-ledger.sh first)"
+else
+  echo "Phase 2: ledger..."
+  snarkjs groth16 setup "$LEDGER_R1CS" "$POT_FILE" "$LEDGER_DIR/0000.zkey"
+  echo "armada-zkey-contribution" | snarkjs zkey contribute "$LEDGER_DIR/0000.zkey" \
+    "$LEDGER_DIR/final.zkey" --name="dev"
+  snarkjs zkey export verificationkey "$LEDGER_DIR/final.zkey" \
+    "$LEDGER_DIR/vkey.json"
+  echo "  → $LEDGER_DIR/final.zkey"
+  echo "  → $LEDGER_DIR/vkey.json"
+fi
+
 echo "Dev setup complete."
 echo "WARNING: These keys are NOT secure. Do not use on mainnet."
