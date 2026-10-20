@@ -1,0 +1,354 @@
+{
+  "id": "derived-arx-aa4",
+  "original_statement": "What must hold? State the invariant or expectation this concerns. armada-circuits compiles owned variants 1x1_owned, 1x2_owned and 1x3_owned of Transact. Each derives the note npk as Poseidon(ownerField, random), where ownerField = uint256(uint160(owner)) is a public input. The owned variants contain no EdDSA check. Brief: armada-poc docs/tasks/P1-transact-owned-circuit.md (Family F1).\nWhat holds now? Describe the current, observed state. Every Transact shape derives npk from the master public key (mpkHash, src/operations/Transact.circom lines 60-77) and requires an EdDSA signature (line 158). No circuit lets a contract own or spend a shielded note.\nHow do you see it? Describe exactly how to observe this for yourself \u2014 the steps to reproduce, or how you would demo it. Compile all shapes with bash scripts/compile.sh, then list build/ : the compiled shapes include 1x1_owned, 1x2_owned and 1x3_owned, each with an r1cs and a wasm. Prove transact-owned-1x2 with a hand-built witness: the proof verifies (verified true), and the npk public signal equals Poseidon(uint160(owner), random) computed in JS. A witness with a different owner gives a different npk. npm run lint:circom reports zero findings.\nWhat constraints apply? State them in plain prose. Keep the existing shapes byte-identical. Removing EdDSA must leave no unconstrained public input. Compile with the repo's circom2 after npm ci; node_modules must not be a symlink.\nWhere does this apply? (e.g. gateway route, mobile screen, CLI verb) armada-circuits src/operations/, src/main/main_1x{1,2,3}_owned.circom, scripts/compile.sh SHAPES, tests/diff-test.js and tests/fixtures/generated/",
+  "restatement": "armada-circuits must compile three new Transact shapes, 1x1_owned, 1x2_owned and 1x3_owned. In these shapes the note public key npk is Poseidon(ownerField, random), where ownerField = uint256(uint160(owner)) is a public input. The shapes contain no EdDSA signature check, so a contract can own and spend a shielded note. Removing EdDSA must leave no unconstrained public input. The existing shapes must stay byte-identical. Compilation uses the repo's circom2 after npm ci, and node_modules must not be a symlink.",
+  "restatement_clauses": [
+    {
+      "id": "c1",
+      "text": "scripts/compile.sh SHAPES lists 1x1_owned, 1x2_owned and 1x3_owned, with entry points src/main/main_1x1_owned.circom, src/main/main_1x2_owned.circom and src/main/main_1x3_owned.circom."
+    },
+    {
+      "id": "c2",
+      "text": "After bash scripts/compile.sh, build/ holds an r1cs and a wasm for each of 1x1_owned, 1x2_owned and 1x3_owned."
+    },
+    {
+      "id": "c3",
+      "text": "Proving transact-owned-1x2 with a hand-built witness gives a proof that verifies (verified true), and the npk public signal equals Poseidon(uint160(owner), random) computed in JS."
+    },
+    {
+      "id": "c4",
+      "text": "A witness with a different owner gives a different npk."
+    },
+    {
+      "id": "c5",
+      "text": "The owned variants contain no EdDSA check."
+    },
+    {
+      "id": "c6",
+      "text": "Removing EdDSA leaves no unconstrained public input in the owned variants."
+    },
+    {
+      "id": "c7",
+      "text": "The existing shapes stay byte-identical: src/operations/Transact.circom and the non-owned main files are unchanged."
+    },
+    {
+      "id": "c8",
+      "text": "npm run lint:circom reports zero findings."
+    },
+    {
+      "id": "c9",
+      "text": "node_modules is not a symlink, and the build uses the repo's circom2 installed by npm ci."
+    }
+  ],
+  "goal": "Add three owned Transact circuit variants (1x1, 1x2, 1x3) where a contract owns a note: npk is Poseidon(ownerField, random) with ownerField = uint256(uint160(owner)) as a public input, and there is no EdDSA check.",
+  "acceptance_criteria": [
+    "The compile script lists all three owned shapes, and each owned entry file exists.",
+    "After a full compile, each of the three owned shapes has both a constraint file and a wasm file in build/.",
+    "A proof for transact-owned-1x2 built from a hand-made witness verifies, and its npk output matches the Poseidon hash of the owner number and random computed separately in JavaScript.",
+    "Two witnesses that differ only in the owner give two different npk values.",
+    "The compiled owned shapes contain no signature check, and the count of such checks found is reported.",
+    "Every public input of each owned shape appears in at least one constraint. The count of unconstrained public inputs is reported.",
+    "The existing Transact circuit file and the non-owned main files show no change against the base commit.",
+    "Running the circom lint command reports no findings.",
+    "The node_modules folder is a real folder, not a symlink, and the circom2 tool inside it runs."
+  ],
+  "request_clauses": [
+    {
+      "id": "c1",
+      "text": "The compile script lists all three owned shapes, and each owned entry file exists."
+    },
+    {
+      "id": "c2",
+      "text": "After a full compile, each of the three owned shapes has both a constraint file and a wasm file in build/."
+    },
+    {
+      "id": "c3",
+      "text": "A proof for transact-owned-1x2 built from a hand-made witness verifies, and its npk output matches the Poseidon hash of the owner number and random computed separately in JavaScript."
+    },
+    {
+      "id": "c4",
+      "text": "Two witnesses that differ only in the owner give two different npk values."
+    },
+    {
+      "id": "c5",
+      "text": "The compiled owned shapes contain no signature check, and the count of such checks found is reported."
+    },
+    {
+      "id": "c6",
+      "text": "Every public input of each owned shape appears in at least one constraint. The count of unconstrained public inputs is reported."
+    },
+    {
+      "id": "c7",
+      "text": "The existing Transact circuit file and the non-owned main files show no change against the base commit."
+    },
+    {
+      "id": "c8",
+      "text": "Running the circom lint command reports no findings."
+    },
+    {
+      "id": "c9",
+      "text": "The node_modules folder is a real folder, not a symlink, and the circom2 tool inside it runs."
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "type": "behavior",
+      "description": "The compile script lists all three owned shapes, and each owned entry file exists.",
+      "proves": "The three owned shapes are part of the build list with their entry files.",
+      "restatement_clause_id": "c1",
+      "when": {
+        "interpreter": "bash",
+        "script": "scripts/check-owned-shapes-listed.sh",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "owned_shapes_listed",
+          "op": "eq",
+          "value": 3
+        },
+        {
+          "observe": "stdout_json",
+          "field": "owned_entry_files_present",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 60,
+      "clause_id": "c1"
+    },
+    {
+      "type": "behavior",
+      "description": "After a full compile, each of the three owned shapes has both a constraint file and a wasm file in build/.",
+      "proves": "All three owned shapes compile to usable artifacts.",
+      "restatement_clause_id": "c2",
+      "when": {
+        "interpreter": "bash",
+        "script": "scripts/check-owned-build.sh",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "owned_shapes_with_r1cs_and_wasm",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 1800,
+      "clause_id": "c2"
+    },
+    {
+      "type": "behavior",
+      "description": "A proof for transact-owned-1x2 built from a hand-made witness verifies, and its npk output matches the Poseidon hash of the owner number and random computed separately in JavaScript.",
+      "proves": "The owned circuit derives npk as specified and accepts a valid witness without a signature.",
+      "restatement_clause_id": "c3",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/owned-proof.js",
+        "args": [
+          "--shape",
+          "transact-owned-1x2",
+          "--case",
+          "base"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "verified",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "observe": "stdout_json",
+          "field": "npk_matches_js_poseidon",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c3"
+    },
+    {
+      "type": "behavior",
+      "description": "Two witnesses that differ only in the owner give two different npk values.",
+      "proves": "The npk depends on the owner.",
+      "restatement_clause_id": "c4",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/owned-proof.js",
+        "args": [
+          "--shape",
+          "transact-owned-1x2",
+          "--case",
+          "different-owner"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "npk_differs",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c4"
+    },
+    {
+      "type": "behavior",
+      "description": "The compiled owned shapes contain no signature check, and the count of such checks found is reported.",
+      "proves": "The owned shapes do not include an EdDSA check.",
+      "restatement_clause_id": "c5",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/check-owned-no-eddsa.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "eddsa_checks_found",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c5"
+    },
+    {
+      "type": "behavior",
+      "description": "Every public input of each owned shape appears in at least one constraint. The count of unconstrained public inputs is reported.",
+      "proves": "Removing the signature check left no public input without a constraint.",
+      "restatement_clause_id": "c6",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/check-owned-public-inputs.js",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "unconstrained_public_inputs",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 900,
+      "clause_id": "c6"
+    },
+    {
+      "type": "behavior",
+      "description": "The existing Transact circuit file and the non-owned main files show no change against the base commit.",
+      "proves": "The existing shapes are byte-identical.",
+      "restatement_clause_id": "c7",
+      "when": {
+        "interpreter": "bash",
+        "script": "scripts/check-existing-shapes-unchanged.sh",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "changed_existing_files",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 120,
+      "clause_id": "c7"
+    },
+    {
+      "type": "behavior",
+      "description": "Running the circom lint command reports no findings.",
+      "proves": "The new circuits pass the repo's lint.",
+      "restatement_clause_id": "c8",
+      "when": {
+        "interpreter": "bash",
+        "script": "scripts/run-lint-circom-json.sh",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "findings",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c8"
+    },
+    {
+      "type": "behavior",
+      "description": "The node_modules folder is a real folder, not a symlink, and the circom2 tool inside it runs.",
+      "proves": "The build uses the repo's own installed circom2.",
+      "restatement_clause_id": "c9",
+      "when": {
+        "interpreter": "bash",
+        "script": "scripts/check-toolchain.sh",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "node_modules_is_symlink",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "observe": "stdout_json",
+          "field": "circom2_runs",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 120,
+      "clause_id": "c9"
+    }
+  ],
+  "criticality": "marginal",
+  "verification_level": "bounded_model_check",
+  "declared_new_entrypoints": [
+    "scripts/check-existing-shapes-unchanged.sh",
+    "scripts/check-owned-build.sh",
+    "scripts/check-owned-shapes-listed.sh",
+    "scripts/check-toolchain.sh",
+    "scripts/run-lint-circom-json.sh",
+    "tests/check-owned-no-eddsa.js",
+    "tests/check-owned-public-inputs.js",
+    "tests/owned-proof.js"
+  ]
+}
