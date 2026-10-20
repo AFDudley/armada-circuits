@@ -1,0 +1,306 @@
+{
+  "id": "derived-arx-799",
+  "original_statement": "What must hold? State the invariant or expectation this concerns. armada-circuits has a Ledger circuit (src/operations/Ledger.circom, entry src/main/main_ledger.circom) that proves a valid hidden-balance move between two channel participants: the new balances conserve the old total and the state commits to both via salted Poseidon commitments, without revealing either balance. See docs/tasks/N5-hidden-balance-ledger-circuit.md S1-S4.\nWhat holds now? Describe the current, observed state. No hidden-balance ledger circuit exists. armada-circuits has the pool shapes (Transact, TransactOwned) and the disclosure/ownership circuits, but no circuit that proves balance conservation over hidden balances.\nHow do you see it? Describe exactly how to observe this for yourself \u2014 the steps to reproduce, or how you would demo it. A probe runs the Ledger vectors and prints one JSON line. valid_move_verifies=true: for balance0Prev=100, balance1Prev=50, balance0Next=70, balance1Next=80, snarkjs groth16 verify accepts the proof against build/ledger/vkey.json. conservation_violation_rejected=true: for balance0Next=70, balance1Next=90, witness generation fails. commitment_mismatch_rejected=true: for a saltNext whose Poseidon commitment differs from the public nextCommitment, witness generation fails. A compile probe prints r1cs_constraints as a positive integer and reports main_ledger_r1cs_exists=true. A lint probe prints lint_problems=0.\nWhat constraints apply? State them in plain prose. Conservation (balance0Prev + balance1Prev === balance0Next + balance1Next) is the only move rule. 120-bit range checks (Num2Bits(120)) on all four balances, matching Transact.circom. Only prevCommitment and nextCommitment are public; no private balance or salt leaks through a public signal or an unconstrained signal. Use the circomlib poseidon.circom and bitify.circom include paths Transact.circom uses. Do not add ledger to scripts/compile.sh SHAPES. The dev ceremony is the unsafe dev key, clearly marked, not the production Phase-2 MPC.\nWhere does this apply? (e.g. gateway route, mobile screen, CLI verb) armada-circuits src/operations/Ledger.circom, src/main/main_ledger.circom, scripts/compile-ledger.sh, build/ledger/, tests/ledger-test.js.",
+  "restatement": "The repository must contain a Ledger circuit that proves a valid hidden-balance move between two channel participants. The new balances must add up to the same total as the old balances. The old and new states must be bound to salted Poseidon commitments. Only the two commitments are public. No balance or salt may leak. The circuit uses 120-bit range checks on all four balances and the same circomlib include paths as Transact.circom. It is built with its own compile script using a clearly marked unsafe dev key. It is not added to the shared SHAPES list.",
+  "restatement_clauses": [
+    {
+      "id": "c1",
+      "text": "For balance0Prev=100, balance1Prev=50, balance0Next=70, balance1Next=80, snarkjs groth16 verify accepts the proof against build/ledger/vkey.json (valid_move_verifies=true)."
+    },
+    {
+      "id": "c2",
+      "text": "For balance0Next=70, balance1Next=90 (conservation violated), witness generation fails (conservation_violation_rejected=true)."
+    },
+    {
+      "id": "c3",
+      "text": "For a saltNext whose Poseidon commitment differs from the public nextCommitment, witness generation fails (commitment_mismatch_rejected=true)."
+    },
+    {
+      "id": "c4",
+      "text": "The compile probe prints r1cs_constraints as a positive integer and reports main_ledger_r1cs_exists=true."
+    },
+    {
+      "id": "c5",
+      "text": "The lint probe prints lint_problems=0."
+    },
+    {
+      "id": "c6",
+      "text": "Num2Bits(120) range checks are applied to all four balances in Ledger.circom, matching Transact.circom."
+    },
+    {
+      "id": "c7",
+      "text": "Only prevCommitment and nextCommitment are public signals in main_ledger.circom; no private balance or salt is public."
+    },
+    {
+      "id": "c8",
+      "text": "Ledger.circom uses the circomlib poseidon.circom and bitify.circom include paths that Transact.circom uses."
+    },
+    {
+      "id": "c9",
+      "text": "ledger is not added to the scripts/compile.sh SHAPES list."
+    },
+    {
+      "id": "c10",
+      "text": "The dev ceremony in scripts/compile-ledger.sh uses the unsafe dev key, clearly marked as unsafe, not the production Phase-2 MPC."
+    }
+  ],
+  "goal": "Add the hidden-balance Ledger circuit (src/operations/Ledger.circom, entry src/main/main_ledger.circom) with its own compile script, build output and test, as described in docs/tasks/N5-hidden-balance-ledger-circuit.md S1-S4.",
+  "acceptance_criteria": [
+    "A valid move (100 and 50 become 70 and 80) produces a proof that the verifier accepts.",
+    "A move that changes the total (70 and 90 from 100 and 50) cannot produce a proof.",
+    "A salt that does not match the public next commitment cannot produce a proof.",
+    "The circuit compiles, reports a positive constraint count, and the compiled constraint file exists.",
+    "The lint check on the Ledger circuit reports zero problems.",
+    "Ledger.circom contains at least four 120-bit range checks.",
+    "The main file declares exactly prevCommitment and nextCommitment as the public signals.",
+    "Ledger.circom includes both the poseidon and bitify circomlib files.",
+    "The shared compile script does not mention ledger.",
+    "The ledger compile script marks its dev key as unsafe."
+  ],
+  "request_clauses": [
+    {
+      "id": "c1",
+      "text": "A valid move (100 and 50 become 70 and 80) produces a proof that the verifier accepts."
+    },
+    {
+      "id": "c2",
+      "text": "A move that changes the total (70 and 90 from 100 and 50) cannot produce a proof."
+    },
+    {
+      "id": "c3",
+      "text": "A salt that does not match the public next commitment cannot produce a proof."
+    },
+    {
+      "id": "c4",
+      "text": "The circuit compiles, reports a positive constraint count, and the compiled constraint file exists."
+    },
+    {
+      "id": "c5",
+      "text": "The lint check on the Ledger circuit reports zero problems."
+    },
+    {
+      "id": "c6",
+      "text": "Ledger.circom contains at least four 120-bit range checks."
+    },
+    {
+      "id": "c7",
+      "text": "The main file declares exactly prevCommitment and nextCommitment as the public signals."
+    },
+    {
+      "id": "c8",
+      "text": "Ledger.circom includes both the poseidon and bitify circomlib files."
+    },
+    {
+      "id": "c9",
+      "text": "The shared compile script does not mention ledger."
+    },
+    {
+      "id": "c10",
+      "text": "The ledger compile script marks its dev key as unsafe."
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "type": "behavior",
+      "description": "A valid move (100 and 50 become 70 and 80) produces a proof that the verifier accepts.",
+      "proves": "A correct hidden-balance move is provable and verifiable.",
+      "restatement_clause_id": "c1",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/ledger-test.js",
+        "args": [
+          "vectors"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "valid_move_verifies",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c1"
+    },
+    {
+      "type": "behavior",
+      "description": "A move that changes the total (70 and 90 from 100 and 50) cannot produce a proof.",
+      "proves": "The circuit refuses moves that do not conserve the total.",
+      "restatement_clause_id": "c2",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/ledger-test.js",
+        "args": [
+          "vectors"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "conservation_violation_rejected",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c2"
+    },
+    {
+      "type": "behavior",
+      "description": "A salt that does not match the public next commitment cannot produce a proof.",
+      "proves": "The new state is bound to its public commitment.",
+      "restatement_clause_id": "c3",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/ledger-test.js",
+        "args": [
+          "vectors"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "commitment_mismatch_rejected",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c3"
+    },
+    {
+      "type": "behavior",
+      "description": "The circuit compiles, reports a positive constraint count, and the compiled constraint file exists.",
+      "proves": "The Ledger circuit builds into a real constraint system.",
+      "restatement_clause_id": "c4",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/ledger-test.js",
+        "args": [
+          "compile"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "r1cs_constraints",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "main_ledger_r1cs_exists",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c4"
+    },
+    {
+      "type": "behavior",
+      "description": "The lint check on the Ledger circuit reports zero problems.",
+      "proves": "The circuit has no lint problems.",
+      "restatement_clause_id": "c5",
+      "when": {
+        "interpreter": "node",
+        "script": "tests/ledger-test.js",
+        "args": [
+          "lint"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "stdout_json",
+          "field": "lint_problems",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c5"
+    },
+    {
+      "type": "grep",
+      "description": "Ledger.circom contains at least four 120-bit range checks.",
+      "proves": "All four balances are range-limited to 120 bits.",
+      "restatement_clause_id": "c6",
+      "pattern": "Num2Bits\\(120\\)",
+      "files": [
+        "src/operations/Ledger.circom"
+      ],
+      "count": {
+        "unit": "lines",
+        "op": "ge",
+        "value": 4
+      },
+      "clause_id": "c6"
+    },
+    {
+      "type": "grep",
+      "description": "The main file declares exactly prevCommitment and nextCommitment as the public signals.",
+      "proves": "Only the two commitments are public.",
+      "restatement_clause_id": "c7",
+      "pattern": "public\\s*\\[\\s*prevCommitment\\s*,\\s*nextCommitment\\s*\\]",
+      "files": [
+        "src/main/main_ledger.circom"
+      ],
+      "clause_id": "c7"
+    },
+    {
+      "type": "grep",
+      "description": "Ledger.circom includes both the poseidon and bitify circomlib files.",
+      "proves": "The circuit uses the same circomlib includes as Transact.circom.",
+      "restatement_clause_id": "c8",
+      "pattern": "include\\s+\"[^\"]*poseidon\\.circom\"",
+      "additional_patterns": [
+        "include\\s+\"[^\"]*bitify\\.circom\""
+      ],
+      "files": [
+        "src/operations/Ledger.circom"
+      ],
+      "count": {
+        "unit": "patterns",
+        "op": "eq",
+        "value": 2
+      },
+      "clause_id": "c8"
+    },
+    {
+      "type": "grep_absent",
+      "description": "The shared compile script does not mention ledger.",
+      "proves": "Ledger is not added to the shared SHAPES list.",
+      "restatement_clause_id": "c9",
+      "pattern": "(?i)ledger",
+      "files": [
+        "scripts/compile.sh"
+      ],
+      "clause_id": "c9"
+    },
+    {
+      "type": "grep",
+      "description": "The ledger compile script marks its dev key as unsafe.",
+      "proves": "The dev ceremony is clearly marked unsafe.",
+      "restatement_clause_id": "c10",
+      "pattern": "(?i)unsafe",
+      "files": [
+        "scripts/compile-ledger.sh"
+      ],
+      "clause_id": "c10"
+    }
+  ],
+  "declared_new_entrypoints": [
+    "tests/ledger-test.js"
+  ]
+}
