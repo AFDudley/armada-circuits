@@ -8,9 +8,19 @@ dispatcher:
 
 # Commit-boundary acceptance gate the integrator re-runs in-worktree for pebbles
 # with NO linked spec (a linked spec is graded in-process by spec_oracle.run_spec).
-# gate:
-#   command: ["your-static-gate-command"]
-#   timeout: 1800
+# Chains pre-commit (JS lint/format) with the circuit build (all src/main/
+# shapes, scripts/compile.sh, ~68s on this host) and the circuit test suite
+# (scripts/test.sh: circomspect static analysis + the JS test placeholder,
+# ~0.2s). CIRCOM_BIN selects the circom2 binary circomlib node_modules ships;
+# the default "circom" command does not exist on a bare host.
+gate:
+  command:
+    [
+      "bash",
+      "-c",
+      "pre-commit run --all-files && CIRCOM_BIN=node_modules/.bin/circom2 npm run compile && npm test",
+    ]
+  timeout: 240
 
 # Where `exophial spec generate` writes unified spec instances (repo-relative).
 spec_dir: "contracts/specs"
