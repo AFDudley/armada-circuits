@@ -1,4 +1,5 @@
 node_modules/
+__pycache__/
 
 # Throwaway scratch (per-run build dirs, logs, worktrees): never /tmp
 .scratch/

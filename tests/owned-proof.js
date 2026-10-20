@@ -4,6 +4,9 @@
  * Usage:
  *   node tests/owned-proof.js --shape transact-owned-1x2 --case base
  *   node tests/owned-proof.js --shape transact-owned-1x2 --case different-owner
+ *   node tests/owned-proof.js --shape transact-owned-1x2 --case base \
+ *     --zkey <path> --vkey <path>   # prove against a supplied key instead
+ *                                    # of this file's own dev setup
  *
  * Case "base" proves one witness and checks the proof verifies, that the
  * circuit's npk output matches Poseidon(ownerField, random), and that its
@@ -131,7 +134,14 @@ async function main() {
   const { m } = OWNED_SHAPES[shapeName];
 
   const paths = ensureCompiled(shapeName);
-  const { zkeyPath, vkeyPath } = ensureZkey(paths.r1cs, paths.outdir);
+  // --zkey/--vkey let a caller supply a key from outside this module's own
+  // dev setup — e.g. the ceremony check proves against a contributed
+  // ceremony zkey, not this file's throwaway test key. Default behavior
+  // (no flags) is unchanged.
+  const { zkeyPath, vkeyPath } =
+    args.zkey && args.vkey
+      ? { zkeyPath: args.zkey, vkeyPath: args.vkey }
+      : ensureZkey(paths.r1cs, paths.outdir);
   const poseidon = await getPoseidon();
 
   const OWNER_A = "123456789012345678901234567890123456789";
