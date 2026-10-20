@@ -3,7 +3,7 @@ poll_interval: 5
 inspect_interval: 5
 
 dispatcher:
-  backend: omp
+  backend: claude_code
   max_workers: 1
   task_timeout: 3600
 
@@ -65,7 +65,7 @@ intake_derivation:
 worker_model:
   tiers:
     default: "pool/5090"
-    sonnet: "anthropic/claude-sonnet-5"
+    sonnet: "claude-sonnet-5"
     frontier: "claude-opus-5"
   routing:
     default: sonnet
