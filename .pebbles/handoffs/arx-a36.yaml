@@ -1,0 +1,73 @@
+status: completed
+pebble_id: arx-a36
+summary: >
+  Ported the Phase-2 Groth16 ceremony tooling (scripts/ceremony/*.sh) from
+  feat/public-ceremony so the three owned Transact shapes (1x1_owned,
+  1x2_owned, 1x3_owned) join the same ceremony the plain shapes use, with no
+  second ceremony kind. Added scripts/ceremony/check_owned.py as the linked
+  spec's acceptance probe: it drives the real ceremony scripts against the
+  real pinned Hermez power-17 ptau inside a gitignored .scratch dry-run
+  directory, and never writes the real ceremony/ state. Added optional
+  --zkey/--vkey flags to tests/owned-proof.js (backward compatible) so a
+  proof can be built against a supplied key instead of the file's own dev
+  setup, which lets the probe prove with the ceremony's contributed zkey
+  rather than a bare setup key. Installed npm dependencies (circom2,
+  snarkjs) in the worktree and ran all seven probe modes myself: exit code
+  0 on every mode, with owned_shapes_with_contribution 3; manifest_shape_count
+  3 and manifest_is_exactly_owned true; zkey_ok_count 3;
+  verifying_keys_exported 3 and ceremony_kinds 1; proof_verified true and
+  key_is_contributed true for transact-owned-1x2; ptau_power 17 and
+  ptau_matches_pinned_hash true; tracked_dry_run_files 0 and
+  real_state_modified false. This reuses and independently re-verifies work
+  from a prior attempt (wip/arx-a36) that a base-collision had orphaned
+  before it merged; this branch carries it forward as a fresh commit.
+cost: ~35k tokens
+commits:
+  - "78e4152"
+verify_transcript:
+  hooks:
+    - name: claude-md-coverage
+      outcome: passed
+      duration_s: 0.1
+    - name: reroute-main-commit
+      outcome: passed
+      duration_s: 0.1
+    - name: trailing-whitespace
+      outcome: passed
+      duration_s: 0.1
+    - name: end-of-file-fixer
+      outcome: passed
+      duration_s: 0.1
+    - name: check-added-large-files
+      outcome: passed
+      duration_s: 0.1
+    - name: check-merge-conflict
+      outcome: passed
+      duration_s: 0.1
+    - name: check-case-conflict
+      outcome: passed
+      duration_s: 0.1
+    - name: mixed-line-ending
+      outcome: passed
+      duration_s: 0.1
+    - name: eslint
+      outcome: passed
+      duration_s: 0.3
+    - name: prettier
+      outcome: passed
+      duration_s: 0.3
+    - name: tdd-trailer
+      outcome: passed
+      duration_s: 0.1
+    - name: check-subtree-edits
+      outcome: passed
+      duration_s: 0.1
+    - name: session-trailer
+      outcome: passed
+      duration_s: 0.1
+e2e_gate:
+  spec: contracts/specs/derived-arx-a36.spec.json
+  command: "python3 scripts/ceremony/check_owned.py {contributions,manifest,zkey-verify,verifying-keys,ptau-pin,no-secrets-committed} && python3 scripts/ceremony/check_owned.py prove-verify transact-owned-1x2"
+  result: passed
+  ran_at_sha: "78e4152"
+  mocks_in_path: false
