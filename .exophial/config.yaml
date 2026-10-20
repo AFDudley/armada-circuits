@@ -65,9 +65,10 @@ intake_derivation:
 worker_model:
   tiers:
     default: "pool/5090"
+    sonnet: "claude-sonnet-5"
     frontier: "claude-opus-5"
   routing:
-    default: default
+    default: sonnet
 
 # The ONE LLM transport this deployment reaches a model through (exo-698c / ADR
 # docs/decisions/2026-07-16-llm-transport-seam.md). Config-selected, fail-loud: a

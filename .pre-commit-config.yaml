@@ -151,6 +151,6 @@ repos:
     hooks:
       - id: prettier
         types_or: [javascript, jsx, ts, tsx, css, json, markdown, yaml]
-        exclude: 'package-lock\.json$'
+        exclude: 'package-lock\.json$|^contracts/specs/.*\.spec\.json$'
         additional_dependencies:
           - prettier@3.4.2
