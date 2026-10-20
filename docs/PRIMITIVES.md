@@ -39,18 +39,22 @@ A note contains:
 - `value` — amount (uint120)
 
 **NPK derivation** (confirmed):
+
 ```
 masterPublicKey = Poseidon(spendingPublicKey[0], spendingPublicKey[1], nullifyingKey)
 npk = Poseidon(masterPublicKey, random)
 ```
 
 **Token hash** (confirmed):
+
 ```
 tokenHash = hash(tokenType, tokenAddress, tokenSubID)
 ```
+
 For ERC20: `tokenType=0`, `tokenSubID=0`, `tokenAddress` is the ERC20 contract address.
 
 **Commitment** (confirmed):
+
 ```
 commitment = Poseidon(npk, tokenHash, value)
 ```
@@ -60,6 +64,7 @@ commitment = Poseidon(npk, tokenHash, value)
 ## Nullifiers
 
 **Confirmed**:
+
 ```
 nullifier = Poseidon(nullifyingKey, leafIndex)
 ```
@@ -85,6 +90,7 @@ Shielded addresses are encoded in a `0zk...` format. The circuit receives the ra
 ## Bound Parameters Hash
 
 **Confirmed**:
+
 ```
 boundParamsHash = uint256(keccak256(abi.encode(boundParams))) % SNARK_SCALAR_FIELD
 ```
@@ -105,6 +111,7 @@ The circuit constrains the same hash over the private `boundParams` witness.
 ## Adapt Parameters
 
 For cross-contract operations:
+
 ```
 adaptParams = hash(npk, encryptedBundle, shieldKey)
 ```

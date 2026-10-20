@@ -13,20 +13,20 @@
  *   node tests/diff-test.js transfer-1x2         # run a specific fixture
  */
 
-const fs = require('fs');
-const path = require('path');
-const snarkjs = require('snarkjs');
+const fs = require("fs");
+const path = require("path");
+const snarkjs = require("snarkjs");
 
-const FIXTURES = path.join(__dirname, 'fixtures', 'generated');
-const BUILD_ROOT = path.join(__dirname, '..', 'build');
+const FIXTURES = path.join(__dirname, "fixtures", "generated");
+const BUILD_ROOT = path.join(__dirname, "..", "build");
 
 function hexToField(hex) {
-  const clean = hex.startsWith('0x') ? hex.slice(2) : hex;
-  return BigInt('0x' + clean).toString();
+  const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
+  return BigInt("0x" + clean).toString();
 }
 
 function stripHex(hex) {
-  return hex.startsWith('0x') ? hex.slice(2) : hex;
+  return hex.startsWith("0x") ? hex.slice(2) : hex;
 }
 
 /**
@@ -55,14 +55,16 @@ function buildCircuitInput(fx) {
     nullifyingKey: hexToField(fx.keys.nullifyingKey),
 
     // Private: inputs (N entries)
-    randomIn: fx.inputs.map(inp => hexToField(inp.random)),
-    valueIn: fx.inputs.map(inp => inp.value),
-    pathElements: fx.inputs.flatMap(inp => inp.merkleProof.elements.map(hexToField)),
-    leavesIndices: fx.inputs.map(inp => inp.leafIndex.toString()),
+    randomIn: fx.inputs.map((inp) => hexToField(inp.random)),
+    valueIn: fx.inputs.map((inp) => inp.value),
+    pathElements: fx.inputs.flatMap((inp) =>
+      inp.merkleProof.elements.map(hexToField),
+    ),
+    leavesIndices: fx.inputs.map((inp) => inp.leafIndex.toString()),
 
     // Private: outputs (M entries)
-    npkOut: fx.outputs.map(out => hexToField(out.notePublicKey)),
-    valueOut: fx.outputs.map(out => out.value),
+    npkOut: fx.outputs.map((out) => hexToField(out.notePublicKey)),
+    valueOut: fx.outputs.map((out) => out.value),
   };
 }
 
@@ -70,26 +72,36 @@ function buildCircuitInput(fx) {
  * Run a differential test for a single fixture.
  */
 async function runDiffTest(fixturePath) {
-  const fxName = path.basename(fixturePath, '.json');
-  const fx = JSON.parse(fs.readFileSync(fixturePath, 'utf-8'));
+  const fxName = path.basename(fixturePath, ".json");
+  const fx = JSON.parse(fs.readFileSync(fixturePath, "utf-8"));
 
   const N = fx.shape.nullifiers;
   const M = fx.shape.commitments;
   const shapeName = `${N}x${M}`;
 
-  console.log('='.repeat(60));
+  console.log("=".repeat(60));
   console.log(`  Differential Test: ${fxName} (${shapeName})`);
-  console.log('='.repeat(60));
+  console.log("=".repeat(60));
 
   // Locate build artifacts for this shape
   const buildDir = path.join(BUILD_ROOT, shapeName);
-  const wasm = path.join(buildDir, `main_${shapeName}_js`, `main_${shapeName}.wasm`);
-  const zkey = path.join(buildDir, 'final.zkey');
-  const vkeyPath = path.join(buildDir, 'vkey.json');
+  const wasm = path.join(
+    buildDir,
+    `main_${shapeName}_js`,
+    `main_${shapeName}.wasm`,
+  );
+  const zkey = path.join(buildDir, "final.zkey");
+  const vkeyPath = path.join(buildDir, "vkey.json");
 
-  for (const [label, p] of [['WASM', wasm], ['ZKEY', zkey], ['VKEY', vkeyPath]]) {
+  for (const [label, p] of [
+    ["WASM", wasm],
+    ["ZKEY", zkey],
+    ["VKEY", vkeyPath],
+  ]) {
     if (!fs.existsSync(p)) {
-      throw new Error(`${label} not found: ${p}. Run 'npm run compile && npm run setup:dev' first.`);
+      throw new Error(
+        `${label} not found: ${p}. Run 'npm run compile && npm run setup:dev' first.`,
+      );
     }
   }
 
@@ -97,19 +109,25 @@ async function runDiffTest(fixturePath) {
   const input = buildCircuitInput(fx);
   console.log(`Loaded fixture: ${fixturePath}`);
   console.log(`  nullifiers: ${N}, commitments: ${M}`);
-  console.log(`  inputs: ${input.randomIn.length}, outputs: ${input.npkOut.length}`);
+  console.log(
+    `  inputs: ${input.randomIn.length}, outputs: ${input.npkOut.length}`,
+  );
   console.log(`  pathElements[0] length: ${input.pathElements[0].length}`);
 
   // Generate proof
-  console.log('\nGenerating proof...');
-  const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, wasm, zkey);
-  console.log('Proof generated.');
+  console.log("\nGenerating proof...");
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+    input,
+    wasm,
+    zkey,
+  );
+  console.log("Proof generated.");
 
   // Compare public signals
-  console.log('\nComparing public signals...');
-  const expectedSignals = fx.publicSignals.map(s => {
-    const clean = typeof s === 'string' ? s.replace(/^0x/i, '') : String(s);
-    return BigInt('0x' + clean).toString();
+  console.log("\nComparing public signals...");
+  const expectedSignals = fx.publicSignals.map((s) => {
+    const clean = typeof s === "string" ? s.replace(/^0x/i, "") : String(s);
+    return BigInt("0x" + clean).toString();
   });
 
   let signalsMatch = true;
@@ -118,22 +136,26 @@ async function runDiffTest(fixturePath) {
     const want = expectedSignals[i];
     const match = got === want;
     if (!match) signalsMatch = false;
-    console.log(`  [${i}] ${match ? '✓' : '✗'} got=${got.slice(0, 20)}... want=${want.slice(0, 20)}...`);
+    console.log(
+      `  [${i}] ${match ? "✓" : "✗"} got=${got.slice(0, 20)}... want=${want.slice(0, 20)}...`,
+    );
   }
 
   if (!signalsMatch) {
-    console.error('  ❌ Public signals mismatch!');
+    console.error("  ❌ Public signals mismatch!");
   }
 
   // Verify proof
-  console.log('\nVerifying proof...');
-  const vkey = JSON.parse(fs.readFileSync(vkeyPath, 'utf-8'));
+  console.log("\nVerifying proof...");
+  const vkey = JSON.parse(fs.readFileSync(vkeyPath, "utf-8"));
   const isValid = await snarkjs.groth16.verify(vkey, publicSignals, proof);
-  console.log(isValid ? '  ✅ Proof verified!' : '  ❌ Proof verification FAILED!');
+  console.log(
+    isValid ? "  ✅ Proof verified!" : "  ❌ Proof verification FAILED!",
+  );
 
   const passed = signalsMatch && isValid;
-  console.log(passed ? '  ✓ ALL CHECKS PASSED' : '  ✗ SOME CHECKS FAILED');
-  console.log('');
+  console.log(passed ? "  ✓ ALL CHECKS PASSED" : "  ✗ SOME CHECKS FAILED");
+  console.log("");
 
   return { name: fxName, shape: shapeName, passed, signalsMatch, isValid };
 }
@@ -145,18 +167,25 @@ async function main() {
 
   if (arg) {
     // Single fixture specified
-    const name = arg.endsWith('.json') ? arg.slice(0, -5) : arg;
-    fixturePaths = [path.join(FIXTURES, name + '.json')];
+    const name = arg.endsWith(".json") ? arg.slice(0, -5) : arg;
+    fixturePaths = [path.join(FIXTURES, name + ".json")];
   } else {
     // All transfer/shield/unshield fixtures
-    fixturePaths = fs.readdirSync(FIXTURES)
-      .filter(f => f.endsWith('.json') && (f.startsWith('transfer-') || f.startsWith('unshield-') || f.startsWith('adapt-')))
-      .map(f => path.join(FIXTURES, f))
+    fixturePaths = fs
+      .readdirSync(FIXTURES)
+      .filter(
+        (f) =>
+          f.endsWith(".json") &&
+          (f.startsWith("transfer-") ||
+            f.startsWith("unshield-") ||
+            f.startsWith("adapt-")),
+      )
+      .map((f) => path.join(FIXTURES, f))
       .sort();
   }
 
   if (fixturePaths.length === 0) {
-    console.log('No fixtures found in', FIXTURES);
+    console.log("No fixtures found in", FIXTURES);
     return;
   }
 
@@ -165,26 +194,31 @@ async function main() {
   const results = [];
   for (const fp of fixturePaths) {
     if (!fs.existsSync(fp)) {
-      console.error('Fixture not found:', fp);
+      console.error("Fixture not found:", fp);
       continue;
     }
     try {
       results.push(await runDiffTest(fp));
     } catch (err) {
       console.error(`Error testing ${path.basename(fp)}:`, err.message);
-      results.push({ name: path.basename(fp, '.json'), shape: '?', passed: false, error: err.message });
+      results.push({
+        name: path.basename(fp, ".json"),
+        shape: "?",
+        passed: false,
+        error: err.message,
+      });
     }
   }
 
   // Summary
-  console.log('='.repeat(60));
-  console.log('  SUMMARY');
-  console.log('='.repeat(60));
-  const passed = results.filter(r => r.passed).length;
-  const failed = results.filter(r => !r.passed).length;
+  console.log("=".repeat(60));
+  console.log("  SUMMARY");
+  console.log("=".repeat(60));
+  const passed = results.filter((r) => r.passed).length;
+  const failed = results.filter((r) => !r.passed).length;
   for (const r of results) {
-    const status = r.passed ? '✓' : '✗';
-    const extra = r.error ? ` (${r.error})` : '';
+    const status = r.passed ? "✓" : "✗";
+    const extra = r.error ? ` (${r.error})` : "";
     console.log(`  ${status} ${r.name} (${r.shape})${extra}`);
   }
   console.log(`\n  ${passed} passed, ${failed} failed`);
@@ -192,7 +226,7 @@ async function main() {
   if (failed > 0) process.exit(1);
 }
 
-main().catch(err => {
-  console.error('Error:', err.message || err);
+main().catch((err) => {
+  console.error("Error:", err.message || err);
   process.exit(1);
 });

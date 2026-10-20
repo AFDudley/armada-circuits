@@ -1,19 +1,20 @@
 # Circuit Security Review (2026-07-06)
 
 ## Scope
+
 - `src/operations/Transact.circom` — main circuit (parameterized N,M)
 - `src/lib/merkle.circom` — Merkle tree proof verifier
 - `src/main/main_NxM.circom` — 19 entry points
 
 ## Summary
 
-| # | Finding | Severity | Status |
-|---|---------|----------|--------|
-| 1 | Missing value range checks (potential modular overflow) | **Medium** | Open |
-| 2 | No in-circuit duplicate nullifier check (same note spent twice) | **Low** | Mitigated on-chain |
-| 3 | boundParamsHash not recomputed in-circuit | **Informational** | By design |
-| 4 | No range check on npkOut values | **Low** | Acceptable |
-| 5 | Merkle depth hardcoded to 16 | **Informational** | By design |
+| #   | Finding                                                         | Severity          | Status             |
+| --- | --------------------------------------------------------------- | ----------------- | ------------------ |
+| 1   | Missing value range checks (potential modular overflow)         | **Medium**        | Open               |
+| 2   | No in-circuit duplicate nullifier check (same note spent twice) | **Low**           | Mitigated on-chain |
+| 3   | boundParamsHash not recomputed in-circuit                       | **Informational** | By design          |
+| 4   | No range check on npkOut values                                 | **Low**           | Acceptable         |
+| 5   | Merkle depth hardcoded to 16                                    | **Informational** | By design          |
 
 ## Findings
 
@@ -22,6 +23,7 @@
 **Location:** `Transact.circom` lines 113-126
 
 The value conservation constraint uses field arithmetic:
+
 ```
 sumIn <== accIn;   // sum of valueIn[i]
 sumOut <== accOut; // sum of valueOut[j]
@@ -33,6 +35,7 @@ Since circom signals are field elements (mod p, p ≈ 2^254), an attacker could 
 **Practical risk: LOW.** Input values come from valid on-chain notes created via `shield()`, which enforces max value of ~2^80 (uint80 in Solidity). With N ≤ 8 inputs, `sumIn ≤ 8 × 2^80 ≈ 2^83`, far below p ≈ 2^254. For the overflow to matter, the prover would need output values > 2^254, but the commitment `Poseidon(npkOut, token, valueOut)` is a public signal verified on-chain.
 
 **Recommendation:** Add explicit range checks for defense in depth:
+
 ```circom
 component valueInRange[N];
 for (var i = 0; i < N; i++) {
@@ -78,6 +81,7 @@ The Merkle tree depth is hardcoded to 16 (65536 leaves max). This matches the on
 **Location:** `src/lib/merkle.circom`
 
 The Merkle proof verifier uses a standard binary tree construction:
+
 - `Num2Bits(depth)` constrains `pathIndices < 2^depth` (prevents index overflow)
 - `deltaLR[i] = bit * (sibling - current)` — single constraint per level
 - Hash chaining: `Poseidon(left, right)` from leaf to root
@@ -93,6 +97,7 @@ Uses circomlib's `EdDSAPoseidonVerifier` — well-audited and standard. The mess
 ### 8. Signature Binding to All Public Inputs (Verified Correct)
 
 The EdDSA message hash includes all public signals: `merkleRoot`, `boundParamsHash`, all `nullifiers`, and all `commitmentsOut`. This prevents:
+
 - Merkle root swapping (would invalidate signature)
 - Nullifier substitution (would invalidate signature)
 - Commitment tampering (would invalidate signature)

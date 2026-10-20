@@ -1,4 +1,7 @@
 node_modules/
+
+# Throwaway scratch (per-run build dirs, logs, worktrees): never /tmp
+.scratch/
 build/
 *.zkey
 *.ptau

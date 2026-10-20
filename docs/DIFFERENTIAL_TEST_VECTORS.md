@@ -24,6 +24,7 @@ This document tracks concrete inputs and outputs captured from the live referenc
 **File**: `tests/fixtures/generated/shield.json`
 
 Captured fields:
+
 - `shieldPrivateKey`, `masterPublicKey`, `random`, `npk`
 - `tokenAddress`, `tokenHash`, `value`
 - `commitment` (tree leaf hash)
@@ -39,6 +40,7 @@ Captured fields:
 **File**: `tests/fixtures/generated/transfer-1x2.json`
 
 Captured fields:
+
 - **Inputs** (1 UTXO):
   - `notePublicKey`, `tokenHash`, `value`, `random`
   - `treeNumber`, `leafIndex`, `nullifier`
@@ -56,6 +58,7 @@ Captured fields:
 **Status**: Not captured yet.
 
 Fields to capture:
+
 - `merkleRoot`
 - `adaptParams`
 - `nullifier[1]`

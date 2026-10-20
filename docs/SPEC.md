@@ -5,6 +5,7 @@
 Armada uses a shielded UTXO model. Users hold notes whose contents are hidden on chain. A note is represented by a **commitment** inserted into a Merkle tree, and spent by revealing a **nullifier** derived from the note's secret key and leaf index.
 
 The circuits prove that a transaction:
+
 1. Spends only notes the prover owns (valid EdDSA signature + Merkle membership).
 2. Does not double-spend (nullifier is derived correctly and unique).
 3. Conserves value across inputs and outputs.
@@ -32,16 +33,16 @@ This layout is enforced by the `VerifierModule` contract and must not change wit
 
 A circuit is identified by `(nullifiers, commitments)`, abbreviated `(N,M)`.
 
-| Shape | Operation | Notes |
-|-------|-----------|-------|
-| (1,1) | Cross-contract adapt | One input note unshielded, one output shielded back; `adaptParams` binds the destination. |
-| (1,2) | Shield | One plaintext preimage → two output commitments (one real, one dummy for padding). |
-| (2,2) | Simple transfer | Spend 2 notes, create 2 outputs (recipient + change). |
-| (2,3) | Transfer with change / fee | Spend 2 notes, create 3 outputs. |
-| (N,1) | Consolidation unshield | Spend N notes, create 1 change commitment. |
-| (3,2)..(6,2) | Larger transfer with change | Spend more notes, 2 outputs. |
-| (1,3),(3,3),(4,3) | Multi-recipient transfer | 3 outputs. |
-| (8,4) | Medium consolidation / fan-out | Largest shape in the initial set. |
+| Shape             | Operation                      | Notes                                                                                     |
+| ----------------- | ------------------------------ | ----------------------------------------------------------------------------------------- |
+| (1,1)             | Cross-contract adapt           | One input note unshielded, one output shielded back; `adaptParams` binds the destination. |
+| (1,2)             | Shield                         | One plaintext preimage → two output commitments (one real, one dummy for padding).        |
+| (2,2)             | Simple transfer                | Spend 2 notes, create 2 outputs (recipient + change).                                     |
+| (2,3)             | Transfer with change / fee     | Spend 2 notes, create 3 outputs.                                                          |
+| (N,1)             | Consolidation unshield         | Spend N notes, create 1 change commitment.                                                |
+| (3,2)..(6,2)      | Larger transfer with change    | Spend more notes, 2 outputs.                                                              |
+| (1,3),(3,3),(4,3) | Multi-recipient transfer       | 3 outputs.                                                                                |
+| (8,4)             | Medium consolidation / fan-out | Largest shape in the initial set.                                                         |
 
 The contract stores one verifying key per shape. Any proof whose shape is not registered reverts with `VerifierModule: Key not set`.
 
@@ -121,8 +122,8 @@ The adapter contract supplies `adaptParams` and the circuit proves the output co
 
 Vectors are stored in `tests/fixtures/generated/`:
 
-| File | Operation | Shape | Description |
-|------|-----------|-------|-------------|
-| `shield.json` | Shield | (0,1) | Single ERC20 shield with full note preimage |
-| `transfer-1x2.json` | Transfer | (1,2) | Spend 1 UTXO, create 2 outputs (recipient + change) |
-| `capture-summary.json` | — | — | Parameter summary from the capture run |
+| File                   | Operation | Shape | Description                                         |
+| ---------------------- | --------- | ----- | --------------------------------------------------- |
+| `shield.json`          | Shield    | (0,1) | Single ERC20 shield with full note preimage         |
+| `transfer-1x2.json`    | Transfer  | (1,2) | Spend 1 UTXO, create 2 outputs (recipient + change) |
+| `capture-summary.json` | —         | —     | Parameter summary from the capture run              |

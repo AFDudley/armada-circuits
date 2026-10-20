@@ -7,16 +7,8 @@
     "nullifier": "Poseidon(nullifyingKey, leafIndex)",
     "merkleNode": "Poseidon(leftChild, rightChild)"
   },
-  "notePreimageFields": [
-    "npk",
-    "token",
-    "value"
-  ],
-  "tokenHashFields": [
-    "tokenType",
-    "tokenAddress",
-    "tokenSubID"
-  ],
+  "notePreimageFields": ["npk", "token", "value"],
+  "tokenHashFields": ["tokenType", "tokenAddress", "tokenSubID"],
   "capturedVectors": {
     "shield": "shield.json",
     "transfer": "transfer-1x2.json"

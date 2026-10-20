@@ -9,6 +9,7 @@ Custom zero-knowledge circuits for the Armada privacy pool.
 Circuit sources are written and compiling. Reference vectors captured. Dev trusted setup in progress.
 
 ### Milestones
+
 - [x] Phase 0: Specification & Design
 - [x] Phase 1: Reference vector capture (shield + transfer-1x2)
 - [x] Phase 2: Circuit implementation — Transact.circomp compiled (1x2 shape, ~20k constraints)
@@ -40,14 +41,14 @@ Circuit sources are written and compiling. Reference vectors captured. Dev trust
 
 ## Circuit Shapes
 
-| Nullifiers | Commitments | Operation |
-|------------|-------------|-----------|
-| 1 | 2 | Shield |
-| 1 | 1 | Cross-contract adapt (lend/redeem) |
-| 2 | 2 | Simple transfer |
-| 2 | 3 | Transfer with change |
-| N | 1 | Consolidation unshield |
-| 8 | 4 | Medium consolidation / multi-recipient |
+| Nullifiers | Commitments | Operation                              |
+| ---------- | ----------- | -------------------------------------- |
+| 1          | 2           | Shield                                 |
+| 1          | 1           | Cross-contract adapt (lend/redeem)     |
+| 2          | 2           | Simple transfer                        |
+| 2          | 3           | Transfer with change                   |
+| N          | 1           | Consolidation unshield                 |
+| 8          | 4           | Medium consolidation / multi-recipient |
 
 See `docs/SPEC.md` for the full matrix and public-input layout.
 
