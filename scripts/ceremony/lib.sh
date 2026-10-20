@@ -29,8 +29,10 @@ else
   SHAPES=("${DEFAULT_SHAPES[@]}")
 fi
 
-# Phase 1: public perpetual Powers of Tau (Hermez), power 17.
-PTAU_URL="https://storage.googleapis.com/zkevm/ptau/powersOfTau28_hez_final_17.ptau"
+# Phase 1: public perpetual Powers of Tau (Hermez), power 17. Served by circom.info
+# (the snarkjs-documented host). The former zkevm GCS bucket now denies anonymous
+# reads (HTTP 403); the file byte-for-byte matches the pinned PTAU_SHA256 below.
+PTAU_URL="https://circom.info/powersOfTau28_hez_final_17.ptau"
 PTAU_FILE="${PTAU_FILE:-$BUILD_DIR/ptau/powersOfTau28_hez_final_17.ptau}"
 PTAU_POWER="${PTAU_POWER:-17}"
 # SHA-256 of the canonical Hermez perpetual ptau (powersOfTau28_hez_final_17.ptau).

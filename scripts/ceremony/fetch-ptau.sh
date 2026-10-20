@@ -14,13 +14,14 @@
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 
-need_cmd curl
-
 mkdir -p "$(dirname "$PTAU_FILE")"
 
 if [ -f "$PTAU_FILE" ]; then
   log "ptau already present: $PTAU_FILE"
 else
+  # curl is needed only for the download; a pre-placed, checksum-matching file
+  # (e.g. staged before a sealed gate run) skips this path and needs no curl.
+  need_cmd curl
   log "downloading Hermez perpetual ptau (power $PTAU_POWER, ~144MB)..."
   log "  source: $PTAU_URL"
   curl -fSL --retry 3 -o "$PTAU_FILE.tmp" "$PTAU_URL"

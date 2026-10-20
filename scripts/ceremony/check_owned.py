@@ -190,7 +190,9 @@ def mode_zkey_verify(_args):
         r1cs = BUILD_DIR / shape / f"main_{shape}.r1cs"
         zkey = dry_run_dir / shape / "0001.zkey"
         result = snarkjs("zkey", "verify", str(r1cs), str(PTAU_FILE), str(zkey))
-        if result.returncode == 0 and "OK" in (result.stdout + result.stderr):
+        # snarkjs prints "[INFO]  snarkJS: ZKey Ok!" on success (mixed case); match
+        # it case-insensitively. prove-verify independently confirms the zkey is valid.
+        if result.returncode == 0 and "zkey ok" in (result.stdout + result.stderr).lower():
             ok_count += 1
     emit({"zkey_ok_count": ok_count})
 
