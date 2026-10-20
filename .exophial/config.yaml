@@ -18,7 +18,7 @@ gate:
     [
       "bash",
       "-c",
-      "pre-commit run --all-files && CIRCOM_BIN=node_modules/.bin/circom2 npm run compile && npm test",
+      "npm ci --offline --no-audit --no-fund && pre-commit run --all-files && CIRCOM_BIN=node_modules/.bin/circom2 npm run compile && npm test",
     ]
   timeout: 240
 
