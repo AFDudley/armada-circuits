@@ -114,3 +114,9 @@
 {"type":"comment","timestamp":"2026-10-20T09:38:35.779846Z","issue_id":"arx-376","payload":{"body":"exophial-integration-attempt-started: at 041bccb1d83edb61bca6ec963ca2f4d0fe8187e4"}}
 {"type":"comment","timestamp":"2026-10-20T09:38:38.787779Z","issue_id":"arx-376","payload":{"body":"exophiald: merged (merged_ff).\n\nexophial-verdict: {\"verdict\": \"pass\"}"}}
 {"type":"close","timestamp":"2026-10-20T09:38:38.788694Z","issue_id":"arx-376","payload":{"outcome":"merged_ff","reason":"clean fast-forward merge; no rebase was needed"}}
+{"type":"close","timestamp":"2026-10-20T09:39:17.631326Z","issue_id":"arx-799","payload":{}}
+{"type":"create","timestamp":"2026-10-20T09:57:09.139981Z","issue_id":"arx-bf6","payload":{"description":"Operator-authored branch `docs/n6-brief-v2`, landed via `exophial integrate --branch` — no pebble id already tracked it.","priority":"2","title":"land: docs/n6-brief-v2","type":"task"}}
+{"type":"comment","timestamp":"2026-10-20T09:57:09.142128Z","issue_id":"arx-bf6","payload":{"body":"branch-identity: docs/n6-brief-v2"}}
+{"type":"comment","timestamp":"2026-10-20T09:58:05.432795Z","issue_id":"arx-bf6","payload":{"body":"exophial-integration-attempt-started: at adc0503dd9f25f95a8f900eb99cba8679b8792e4"}}
+{"type":"comment","timestamp":"2026-10-20T09:58:08.147381Z","issue_id":"arx-bf6","payload":{"body":"exophiald: merged (merged_ff).\n\nexophial-verdict: {\"verdict\": \"pass\"}"}}
+{"type":"close","timestamp":"2026-10-20T09:58:08.148290Z","issue_id":"arx-bf6","payload":{"outcome":"merged_ff","reason":"clean fast-forward merge; no rebase was needed"}}
