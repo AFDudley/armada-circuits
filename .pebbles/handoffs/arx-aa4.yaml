@@ -1,0 +1,80 @@
+status: completed
+pebble_id: arx-aa4
+summary: >
+  Added three owned Transact circuit variants (1x1_owned, 1x2_owned,
+  1x3_owned) via a new TransactOwned(N, M) operation template
+  (src/operations/TransactOwned.circom) and three entry points
+  (src/main/main_1x{1,2,3}_owned.circom). The owned variant derives the
+  input note's npk as Poseidon(ownerField, random), where ownerField is a
+  new public input, exposes npk and a transcriptHash as public outputs,
+  and contains no EdDSA component. transcriptHash commits to
+  (merkleRoot, boundParamsHash, nullifiers, commitmentsOut) so
+  boundParamsHash stays constrained without a signature. scripts/compile.sh
+  and scripts/setup-dev.sh gained an optional third "name" field on each
+  SHAPES entry so the owned shapes build under their "_owned" names.
+  Verified by compiling all 22 shapes with the repo's circom2 (after npm
+  ci, node_modules a real directory), proving and verifying a hand-built
+  witness for transact-owned-1x2 with a real groth16 proof (snarkjs), and
+  confirming two witnesses differing only in owner give different npk.
+  Confirmed via source and compiled .sym output that the owned shapes carry
+  no EdDSA check, and via the exported r1cs that every public input of each
+  owned shape participates in at least one constraint (verified this check
+  actually discriminates: temporarily unbinding boundParamsHash made it
+  report 3 unconstrained inputs, one per shape, then reverted). Confirmed
+  src/operations/Transact.circom and the non-owned main_*.circom files are
+  byte-identical to the integrated base via git diff. circomspect reports
+  zero findings on the four new owned-circuit files (src/lib/merkle.circom
+  carries one pre-existing, unrelated finding that predates this change and
+  that the repo's own lint:circom script already tolerates via `|| true`).
+  All 9 acceptance-test scripts named in the linked spec were authored as
+  part of this change and pass.
+cost: ~230k tokens
+commits:
+  - "2d53d4b8753ce0f9d7417b60b0893b64bd576ea8"
+verify_transcript:
+  hooks:
+    - name: claude-md-coverage
+      outcome: passed
+      duration_s: 1
+    - name: reroute-main-commit
+      outcome: passed
+      duration_s: 1
+    - name: trailing-whitespace
+      outcome: passed
+      duration_s: 1
+    - name: end-of-file-fixer
+      outcome: passed
+      duration_s: 1
+    - name: check-added-large-files
+      outcome: passed
+      duration_s: 1
+    - name: check-merge-conflict
+      outcome: passed
+      duration_s: 1
+    - name: check-case-conflict
+      outcome: passed
+      duration_s: 1
+    - name: mixed-line-ending
+      outcome: passed
+      duration_s: 1
+    - name: eslint
+      outcome: passed
+      duration_s: 5
+    - name: prettier
+      outcome: passed
+      duration_s: 3
+    - name: tdd-trailer
+      outcome: passed
+      duration_s: 1
+    - name: check-subtree-edits
+      outcome: passed
+      duration_s: 1
+    - name: session-trailer
+      outcome: passed
+      duration_s: 1
+e2e_gate:
+  spec: tests/owned-proof.js
+  command: "node tests/owned-proof.js --shape transact-owned-1x2 --case base"
+  result: passed
+  ran_at_sha: "2d53d4b8753ce0f9d7417b60b0893b64bd576ea8"
+  mocks_in_path: false
