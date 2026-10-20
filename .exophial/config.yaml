@@ -65,7 +65,7 @@ intake_derivation:
 worker_model:
   tiers:
     default: "pool/5090"
-    sonnet: "claude-sonnet-5"
+    sonnet: "anthropic/claude-sonnet-5"
     frontier: "claude-opus-5"
   routing:
     default: sonnet
