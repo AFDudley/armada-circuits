@@ -1,0 +1,330 @@
+{
+  "id": "derived-arx-a36",
+  "original_statement": "What must hold? State the invariant or expectation this concerns. The three owned Transact shapes 1x1_owned, 1x2_owned and 1x3_owned must each have a Phase-2 Groth16 setup and at least one coordinator contribution, in the same ceremony format the plain shapes use. A verifying key for each owned shape must be producible and usable the same way as the plain shapes' keys, with no second ceremony kind. A proof for an owned shape built against a contributed key must verify end to end.\nWhat holds now? Describe the current, observed state. The Phase-2 ceremony tooling lives on the fork branch feat/public-ceremony, not on integrated. integrated has no ceremony directory and no scripts/ceremony. The owned shapes, added by P1, have no Phase-2 setup and no contributed verifying key. Only the plain shapes have a ceremony.\nHow do you see it? Describe exactly how to observe this for yourself \u2014 the steps to reproduce, or how you would demo it. For each owned shape, a contributed zkey verifies against the shape's r1cs and the pinned power-17 ptau: snarkjs zkey verify reports ZKey Ok. The ceremony manifest lists exactly the three owned shapes. A proof for transact-owned-1x2 built against the contributed key, not a bare setup key, verifies end to end.\nWhat constraints apply? State them in plain prose. Use the real pinned Hermez power-17 ptau, not a throwaway power-15 ptau. Never commit a real private-entropy contribution to integrated; the dry-run ceremony directory is for CI and local proof only and is gitignored or deleted before the branch is pushed. Do not write into the real ceremony state. Add no second ceremony kind: the owned shapes join the same Phase-2 ceremony the plain shapes use. Depends on P1's owned shapes and scripts/compile.sh.\nWhere does this apply? (e.g. gateway route, mobile screen, CLI verb) armada-circuits scripts/ceremony/, ceremony/, build/, src/main/main_1x{1,2,3}_owned.circom",
+  "restatement": "The three owned Transact shapes 1x1_owned, 1x2_owned and 1x3_owned must join the same Phase-2 Groth16 ceremony that the plain shapes use. Each must get a Phase-2 setup and at least one coordinator contribution. Each must yield a verifying key in the same way as a plain shape, with no second ceremony kind. The ceremony must use the real pinned Hermez power-17 ptau. The contributed zkeys must verify against each shape's r1cs. A proof for transact-owned-1x2 built against the contributed key must verify end to end. No real private-entropy contribution may be committed to integrated, and the real ceremony state must not be modified.",
+  "restatement_clauses": [
+    {
+      "id": "c1",
+      "text": "Each of the three owned shapes 1x1_owned, 1x2_owned and 1x3_owned has a Phase-2 Groth16 setup and at least one coordinator contribution, in the same ceremony format the plain shapes use."
+    },
+    {
+      "id": "c2",
+      "text": "The ceremony manifest lists exactly the three owned shapes."
+    },
+    {
+      "id": "c3",
+      "text": "For each owned shape, the contributed zkey verifies against the shape's r1cs and the pinned power-17 ptau: snarkjs zkey verify reports ZKey Ok."
+    },
+    {
+      "id": "c4",
+      "text": "A verifying key for each owned shape is producible and usable the same way as the plain shapes' keys, with no second ceremony kind added."
+    },
+    {
+      "id": "c5",
+      "text": "A proof for transact-owned-1x2 built against the contributed key, not a bare setup key, verifies end to end."
+    },
+    {
+      "id": "c6",
+      "text": "The ceremony uses the real pinned Hermez power-17 ptau, not a throwaway power-15 ptau."
+    },
+    {
+      "id": "c7",
+      "text": "No real private-entropy contribution is committed to integrated: the dry-run ceremony directory is gitignored or deleted before the branch is pushed, and the real ceremony state is not written."
+    }
+  ],
+  "goal": "Run the owned Transact shapes through the existing Phase-2 ceremony and prove that the contributed keys verify and produce verifying proofs.",
+  "acceptance_criteria": [
+    "Running the ceremony check shows all three owned shapes have a Phase-2 setup and at least one contribution.",
+    "The ceremony manifest, when read back, lists exactly three shapes, and they are the three owned ones.",
+    "The snarkjs zkey verify check reports ZKey Ok for each owned shape's contributed key.",
+    "A verifying key is exported for each owned shape with the same tooling as the plain shapes, and only one kind of ceremony exists.",
+    "A proof for transact-owned-1x2 is made with the contributed key and checked, and the check passes.",
+    "The ceremony check reports the ptau file it used. It is the pinned Hermez power-17 file, not a power-15 file.",
+    "The check finds no private-entropy contribution files tracked in git and no change to the real ceremony state."
+  ],
+  "request_clauses": [
+    {
+      "id": "c1",
+      "text": "Running the ceremony check shows all three owned shapes have a Phase-2 setup and at least one contribution."
+    },
+    {
+      "id": "c2",
+      "text": "The ceremony manifest, when read back, lists exactly three shapes, and they are the three owned ones."
+    },
+    {
+      "id": "c3",
+      "text": "The snarkjs zkey verify check reports ZKey Ok for each owned shape's contributed key."
+    },
+    {
+      "id": "c4",
+      "text": "A verifying key is exported for each owned shape with the same tooling as the plain shapes, and only one kind of ceremony exists."
+    },
+    {
+      "id": "c5",
+      "text": "A proof for transact-owned-1x2 is made with the contributed key and checked, and the check passes."
+    },
+    {
+      "id": "c6",
+      "text": "The ceremony check reports the ptau file it used. It is the pinned Hermez power-17 file, not a power-15 file."
+    },
+    {
+      "id": "c7",
+      "text": "The check finds no private-entropy contribution files tracked in git and no change to the real ceremony state."
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "type": "behavior",
+      "description": "Running the ceremony check shows all three owned shapes have a Phase-2 setup and at least one contribution.",
+      "proves": "Every owned shape went through the same Phase-2 ceremony as the plain shapes.",
+      "restatement_clause_id": "c1",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "contributions"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "owned_shapes_with_contribution",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c1"
+    },
+    {
+      "type": "behavior",
+      "description": "The ceremony manifest, when read back, lists exactly three shapes, and they are the three owned ones.",
+      "proves": "The manifest covers the owned shapes and nothing else.",
+      "restatement_clause_id": "c2",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "manifest"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "manifest_shape_count",
+          "op": "eq",
+          "value": 3
+        },
+        {
+          "observe": "stdout_json",
+          "field": "manifest_is_exactly_owned",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 120,
+      "clause_id": "c2"
+    },
+    {
+      "type": "behavior",
+      "description": "The snarkjs zkey verify check reports ZKey Ok for each owned shape's contributed key.",
+      "proves": "Each contributed key is valid for its circuit and the pinned power-17 ptau.",
+      "restatement_clause_id": "c3",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "zkey-verify"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "zkey_ok_count",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 1800,
+      "clause_id": "c3"
+    },
+    {
+      "type": "behavior",
+      "description": "A verifying key is exported for each owned shape with the same tooling as the plain shapes, and only one kind of ceremony exists.",
+      "proves": "Owned keys are usable like plain keys and no second ceremony kind was added.",
+      "restatement_clause_id": "c4",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "verifying-keys"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "verifying_keys_exported",
+          "op": "eq",
+          "value": 3
+        },
+        {
+          "observe": "stdout_json",
+          "field": "ceremony_kinds",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 600,
+      "clause_id": "c4"
+    },
+    {
+      "type": "behavior",
+      "description": "A proof for transact-owned-1x2 is made with the contributed key and checked, and the check passes.",
+      "proves": "The contributed key works end to end, not only a bare setup key.",
+      "restatement_clause_id": "c5",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "prove-verify",
+          "transact-owned-1x2"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "proof_verified",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "observe": "stdout_json",
+          "field": "key_is_contributed",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 1800,
+      "clause_id": "c5"
+    },
+    {
+      "type": "behavior",
+      "description": "The ceremony check reports the ptau file it used. It is the pinned Hermez power-17 file, not a power-15 file.",
+      "proves": "The ceremony runs on the real power-17 ptau.",
+      "restatement_clause_id": "c6",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "ptau-pin"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "ptau_power",
+          "op": "eq",
+          "value": 17
+        },
+        {
+          "observe": "stdout_json",
+          "field": "ptau_matches_pinned_hash",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 300,
+      "clause_id": "c6"
+    },
+    {
+      "type": "behavior",
+      "description": "The check finds no private-entropy contribution files tracked in git and no change to the real ceremony state.",
+      "proves": "No real secret entropy is committed and the real ceremony state is untouched.",
+      "restatement_clause_id": "c7",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/ceremony/check_owned.py",
+        "args": [
+          "no-secrets-committed"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "exit_code",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "tracked_dry_run_files",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "real_state_modified",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 120,
+      "clause_id": "c7"
+    }
+  ],
+  "criticality": "marginal",
+  "verification_level": "bounded_model_check",
+  "declared_new_entrypoints": [
+    "scripts/ceremony/check_owned.py"
+  ]
+}
