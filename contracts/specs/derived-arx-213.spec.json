@@ -1,0 +1,265 @@
+{
+  "id": "derived-arx-213",
+  "original_statement": "What must hold? State the invariant or expectation this concerns. armada-circuits provides an owned Transact entry point for every nullifier count N from 1 through 8 and every commitment count M from 1 through 4, 32 shapes total. The three existing owned shapes, 1x1_owned, 1x2_owned and 1x3_owned, keep their current verifying keys. Each owned shape is registered in scripts/compile.sh's SHAPES array. The standard, non-owned shape set already builds an 8-input, 4-output shape: SHAPES lists \"8,4\" (src/main/main_8x4.circom). The pool's verification-key registry maps (nullifierCount, commitmentCount) to a key with no bound of its own (armada-poc VerifierModule.sol lines 14, 37-46, 55).\nWhat holds now? Describe the current, observed state. armada-circuits compiles three owned Transact shapes: main_1x1_owned.circom, main_1x2_owned.circom and main_1x3_owned.circom (src/main/), each with N fixed at 1. scripts/compile.sh's SHAPES array lists exactly these three owned entries, each with N=1: \"1,1,1x1_owned\" \"1,2,1x2_owned\" \"1,3,1x3_owned\". No owned shape exists with N from 2 through 8, and no owned shape exists with M above 3.\nHow do you see it? Describe exactly how to observe this for yourself \u2014 the steps to reproduce, or how you would demo it. List src/main/main_*_owned.circom: three files exist, each instantiating TransactOwned(1, M) for M in 1, 2, 3. Read scripts/compile.sh's SHAPES array: three owned entries, each with N=1, alongside a non-owned \"8,4\" entry. Run bash scripts/compile.sh and list build/: the owned build directories are 1x1_owned, 1x2_owned and 1x3_owned only.\nWhat constraints apply? State them in plain prose. A shape that does not fit a hard limit of the system, such as the ceremony's powers-of-tau size or the transaction gas cap, is reported with its measured constraint count. The three existing N=1 owned shapes keep their own verifying keys and byte-identical circuit files. The TransactOwned circuit template (src/operations/TransactOwned.circom line 30) takes N and M as template parameters, independent of which main_*_owned.circom entry points exist. The pool's owned-shape verification-key registry, ownedVerificationKeys (armada-poc VerifierModule.sol lines 49-54), is keyed by (nullifierCount, commitmentCount) with no bound of its own.\nWhere does this apply? (e.g. gateway route, mobile screen, CLI verb) armada-circuits src/main/main_*_owned.circom, scripts/compile.sh SHAPES",
+  "restatement": "armada-circuits must offer an owned Transact shape for every nullifier count N from 1 through 8 and every commitment count M from 1 through 4, which is 32 shapes. Each shape needs its own entry file in src/main and its own entry in the SHAPES array of scripts/compile.sh. The three existing shapes 1x1_owned, 1x2_owned and 1x3_owned keep their verifying keys and byte-identical circuit files. Building with scripts/compile.sh must produce 32 owned build directories. Any shape that does not fit a hard system limit must be reported with its measured constraint count.",
+  "restatement_clauses": [
+    {
+      "id": "c1",
+      "text": "src/main contains an owned entry file for every N from 1 through 8 and M from 1 through 4, each instantiating TransactOwned(N, M), 32 shapes in total."
+    },
+    {
+      "id": "c2",
+      "text": "The SHAPES array in scripts/compile.sh lists all 32 owned entries in the form \"N,M,NxM_owned\" for N 1 through 8 and M 1 through 4."
+    },
+    {
+      "id": "c3",
+      "text": "The existing 1x1_owned, 1x2_owned and 1x3_owned shapes keep byte-identical circuit files and unchanged verifying keys."
+    },
+    {
+      "id": "c4",
+      "text": "Running bash scripts/compile.sh produces exactly 32 owned build directories in build/, named NxM_owned."
+    },
+    {
+      "id": "c5",
+      "text": "Any owned shape that does not fit a hard system limit (ceremony powers-of-tau size or transaction gas cap) is reported with its measured constraint count."
+    }
+  ],
+  "goal": "Complete the owned Transact shape matrix of 8 by 4 shapes.",
+  "acceptance_criteria": [
+    "The source folder holds an owned entry file for each of the 32 combinations of 1 to 8 inputs and 1 to 4 outputs.",
+    "The compile script lists all 32 owned shapes, from 1,1,1x1_owned to 8,4,8x4_owned.",
+    "The three original owned shapes have the same circuit files and the same verifying keys as before the change.",
+    "After running the compile script, the build folder holds exactly 32 owned shape folders and none of the expected ones are missing.",
+    "Every owned shape that exceeds a hard system limit is listed together with its measured constraint count."
+  ],
+  "request_clauses": [
+    {
+      "id": "c1",
+      "text": "The source folder holds an owned entry file for each of the 32 combinations of 1 to 8 inputs and 1 to 4 outputs."
+    },
+    {
+      "id": "c2",
+      "text": "The compile script lists all 32 owned shapes, from 1,1,1x1_owned to 8,4,8x4_owned."
+    },
+    {
+      "id": "c3",
+      "text": "The three original owned shapes have the same circuit files and the same verifying keys as before the change."
+    },
+    {
+      "id": "c4",
+      "text": "After running the compile script, the build folder holds exactly 32 owned shape folders and none of the expected ones are missing."
+    },
+    {
+      "id": "c5",
+      "text": "Every owned shape that exceeds a hard system limit is listed together with its measured constraint count."
+    }
+  ],
+  "acceptance_tests": [
+    {
+      "type": "grep",
+      "description": "The source folder holds an owned entry file for each of the 32 combinations of 1 to 8 inputs and 1 to 4 outputs.",
+      "proves": "All 32 owned shapes have an entry file with the right sizes.",
+      "restatement_clause_id": "c1",
+      "pattern": "TransactOwned\\(\\s*1\\s*,\\s*1\\s*\\)",
+      "additional_patterns": [
+        "TransactOwned\\(\\s*1\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*1\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*1\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*2\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*2\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*2\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*2\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*3\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*3\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*3\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*3\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*4\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*4\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*4\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*4\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*5\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*5\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*5\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*5\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*6\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*6\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*6\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*6\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*7\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*7\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*7\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*7\\s*,\\s*4\\s*\\)",
+        "TransactOwned\\(\\s*8\\s*,\\s*1\\s*\\)",
+        "TransactOwned\\(\\s*8\\s*,\\s*2\\s*\\)",
+        "TransactOwned\\(\\s*8\\s*,\\s*3\\s*\\)",
+        "TransactOwned\\(\\s*8\\s*,\\s*4\\s*\\)"
+      ],
+      "files": [
+        "src/main/main_*_owned.circom"
+      ],
+      "count": {
+        "unit": "patterns",
+        "op": "eq",
+        "value": 32
+      },
+      "clause_id": "c1"
+    },
+    {
+      "type": "grep",
+      "description": "The compile script lists all 32 owned shapes, from 1,1,1x1_owned to 8,4,8x4_owned.",
+      "proves": "The build script knows about every owned shape.",
+      "restatement_clause_id": "c2",
+      "pattern": "\"1,1,1x1_owned\"",
+      "additional_patterns": [
+        "\"1,2,1x2_owned\"",
+        "\"1,3,1x3_owned\"",
+        "\"1,4,1x4_owned\"",
+        "\"2,1,2x1_owned\"",
+        "\"2,2,2x2_owned\"",
+        "\"2,3,2x3_owned\"",
+        "\"2,4,2x4_owned\"",
+        "\"3,1,3x1_owned\"",
+        "\"3,2,3x2_owned\"",
+        "\"3,3,3x3_owned\"",
+        "\"3,4,3x4_owned\"",
+        "\"4,1,4x1_owned\"",
+        "\"4,2,4x2_owned\"",
+        "\"4,3,4x3_owned\"",
+        "\"4,4,4x4_owned\"",
+        "\"5,1,5x1_owned\"",
+        "\"5,2,5x2_owned\"",
+        "\"5,3,5x3_owned\"",
+        "\"5,4,5x4_owned\"",
+        "\"6,1,6x1_owned\"",
+        "\"6,2,6x2_owned\"",
+        "\"6,3,6x3_owned\"",
+        "\"6,4,6x4_owned\"",
+        "\"7,1,7x1_owned\"",
+        "\"7,2,7x2_owned\"",
+        "\"7,3,7x3_owned\"",
+        "\"7,4,7x4_owned\"",
+        "\"8,1,8x1_owned\"",
+        "\"8,2,8x2_owned\"",
+        "\"8,3,8x3_owned\"",
+        "\"8,4,8x4_owned\""
+      ],
+      "files": [
+        "scripts/compile.sh"
+      ],
+      "count": {
+        "unit": "patterns",
+        "op": "eq",
+        "value": 32
+      },
+      "clause_id": "c2"
+    },
+    {
+      "type": "behavior",
+      "description": "The three original owned shapes have the same circuit files and the same verifying keys as before the change.",
+      "proves": "The existing shapes were not altered.",
+      "restatement_clause_id": "c3",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/verify_existing_owned_unchanged.py",
+        "args": [
+          "--baseline",
+          "614e3c8ee87cc81e0b6e2beb14f46fb303b4b2a6"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "changed_files",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "changed_verifying_keys",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 3600,
+      "clause_id": "c3"
+    },
+    {
+      "type": "behavior",
+      "description": "After running the compile script, the build folder holds exactly 32 owned shape folders and none of the expected ones are missing.",
+      "proves": "The full set of owned shapes builds.",
+      "restatement_clause_id": "c4",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/verify_owned_shapes_built.py",
+        "args": [],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "owned_build_dirs",
+          "op": "eq",
+          "value": 32
+        },
+        {
+          "observe": "stdout_json",
+          "field": "missing_shapes",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 7200,
+      "clause_id": "c4"
+    },
+    {
+      "type": "behavior",
+      "description": "Every owned shape that exceeds a hard system limit is listed together with its measured constraint count.",
+      "proves": "No oversized shape is left without a reported constraint count.",
+      "restatement_clause_id": "c5",
+      "when": {
+        "interpreter": "python3",
+        "script": "scripts/verify_owned_shapes_built.py",
+        "args": [
+          "--limit-report"
+        ],
+        "stdin": ""
+      },
+      "then": [
+        {
+          "observe": "exit_code",
+          "field": "",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "observe": "stdout_json",
+          "field": "over_limit_without_constraint_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "max_runs": 1,
+      "timeout_seconds": 7200,
+      "clause_id": "c5"
+    }
+  ],
+  "declared_new_entrypoints": [
+    "scripts/verify_existing_owned_unchanged.py",
+    "scripts/verify_owned_shapes_built.py"
+  ]
+}
